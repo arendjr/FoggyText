@@ -134,6 +134,7 @@ SOURCES += \
     engine/commands/api/triggergetcommand.cpp \
     engine/commands/api/triggersetcommand.cpp \
     engine/commands/api/triggerslistcommand.cpp \
+    engine/commands/generator/generateenvironmentcommand.cpp \
     engine/events/asyncreplyevent.cpp \
     engine/events/commandevent.cpp \
     engine/events/deleteobjectevent.cpp \
@@ -262,6 +263,7 @@ HEADERS += \
     engine/commands/api/triggergetcommand.h \
     engine/commands/api/triggersetcommand.h \
     engine/commands/api/triggerslistcommand.h \
+    engine/commands/generator/generateenvironmentcommand.h \
     engine/events/asyncreplyevent.h \
     engine/events/commandevent.h \
     engine/events/deleteobjectevent.h \
@@ -312,6 +314,7 @@ INCLUDEPATH += \
     engine/commands \
     engine/commands/admin \
     engine/commands/api \
+    engine/commands/generator \
     engine/events \
     engine/logmessages \
     $$PWD/../3rdparty \

@@ -75,6 +75,7 @@
 #include "commands/api/triggergetcommand.h"
 #include "commands/api/triggersetcommand.h"
 #include "commands/api/triggerslistcommand.h"
+#include "commands/generator/generateenvironmentcommand.h"
 
 
 CommandRegistry::CommandRegistry(QObject *parent) :
@@ -133,6 +134,7 @@ CommandRegistry::CommandRegistry(QObject *parent) :
     m_adminCommands.insert("copy-item", new CopyItemCommand(this));
     m_adminCommands.insert("copy-triggers", new CopyTriggersCommand(this));
     m_adminCommands.insert("exec-script", new ExecScriptCommand(this));
+    m_adminCommands.insert("generate-environment", new GenerateEnvironmentCommand(this));
     m_adminCommands.insert("get-prop", new GetPropCommand(this));
     m_adminCommands.insert("get-trigger", new GetTriggerCommand(this));
     m_adminCommands.insert("list-methods", new ListMethodsCommand(this));
