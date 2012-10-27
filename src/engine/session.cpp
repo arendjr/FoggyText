@@ -430,7 +430,7 @@ void Session::processSignupConfirmation(const QString &answer) {
         height += randomStats.intelligence - (randomStats.dexterity / 2);
         weight += randomStats.strength;
 
-        m_player = GameObject::createByObjectType<Player *>(m_realm, "player");
+        m_player = new Player(m_realm);
 
         m_player->setAdmin(m_realm->players().isEmpty());
         m_player->setName(m_signUpData->userName);
