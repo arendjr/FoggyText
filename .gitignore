@@ -1,5 +1,5 @@
 # Qt Creator build
-FoggyText-build-desktop*
+FoggyText-build*
 FoggyText.pro.user
 moc_*.cpp
 

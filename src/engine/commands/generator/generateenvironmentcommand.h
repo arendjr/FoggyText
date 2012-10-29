@@ -4,8 +4,9 @@
 #include "admincommand.h"
 
 
-class Point;
+class Point3D;
 class Room;
+class Vector3D;
 
 
 class GenerateEnvironmentCommand : public AdminCommand {
@@ -19,8 +20,13 @@ class GenerateEnvironmentCommand : public AdminCommand {
         virtual void execute(Player *player, const QString &command);
 
     private:
-        void generateScraperFloor(int level, const Point &center);
-        Room *createRoomAt(const Point &position);
+        QList<Room *> generateScraperFloor(int level, const Point3D &center);
+
+        Room *createRoomAt(const Point3D &position);
+
+        void connectRooms(Room *roomA, Room *roomB);
+
+        QString directionForVector(const Vector3D &vector);
 };
 
 #endif // GENERATECOMMAND_H
