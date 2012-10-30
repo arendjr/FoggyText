@@ -442,7 +442,7 @@ void Session::processSignupConfirmation(const QString &answer) {
         m_player->setStats(stats);
         m_player->setHeight(height);
         m_player->setWeight(weight);
-        m_player->setCurrentRoom(humanRace->startingArea());
+        m_player->setCurrentRoom(humanRace->startingRoom());
 
         m_player->setHp(m_player->maxHp());
         m_player->setMp(m_player->maxMp());
