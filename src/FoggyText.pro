@@ -174,6 +174,7 @@ HEADERS += \
     engine/effect.h \
     engine/engine.h \
     engine/exit.h \
+    engine/foreach.h \
     engine/gameexception.h \
     engine/gameobject.h \
     engine/gameobjectptr.h \

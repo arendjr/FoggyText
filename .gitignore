@@ -1,6 +1,7 @@
 # Qt Creator build
 FoggyText-build*
-FoggyText.pro.user
+FoggyText.pro.user*
+Makefile
 moc_*.cpp
 
 # XCode project
