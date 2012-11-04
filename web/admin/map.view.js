@@ -120,7 +120,7 @@ MapView.prototype.draw = function() {
     var roomSize = 30;
 
     var self = this;
-    var perspective = this.perspective;
+    var perspective = 2 * this.perspective;
 
     function drawRoom(room) {
         room.exits.forEach(function(exit) {

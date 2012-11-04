@@ -211,7 +211,7 @@ function Controller() {
     this.pendingRequests = {};
     this.requestId = 1;
 
-    this.socket = new WebSocket("ws://" + document.location.hostname + ":4802");
+    this.socket = new WebSocket("ws://" + document.location.hostname + ":5802");
 
     this.attachListeners();
 

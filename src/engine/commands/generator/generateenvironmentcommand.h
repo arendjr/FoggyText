@@ -21,6 +21,8 @@ class GenerateEnvironmentCommand : public AdminCommand {
 
     private:
         QList<Room *> generateScraperFloor(int level, const Point3D &center);
+        QList<Room *> generateRoof(const Point3D &topLeft, const Point3D &topRight,
+                                   const Point3D &bottomLeft, const Point3D &bottomRight);
 
         Room *createRoomAt(const Point3D &position);
 

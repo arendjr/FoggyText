@@ -41,9 +41,9 @@ bool Engine::start() {
         m_scriptEngine->loadScripts();
         m_realm->init();
 
-        m_telnetServer = new TelnetServer(m_realm, 4801);
-        m_webSocketServer = new WebSocketServer(m_realm, 4802);
-        m_httpServer = new HttpServer(8080);
+        m_telnetServer = new TelnetServer(m_realm, 5801);
+        m_webSocketServer = new WebSocketServer(m_realm, 5802);
+        m_httpServer = new HttpServer(9090);
 
         return true;
     } catch (const GameException &exception) {
