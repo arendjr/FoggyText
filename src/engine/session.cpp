@@ -409,7 +409,7 @@ void Session::processSignupConfirmation(const QString &answer) {
             weight -= 5;
         }
 
-        CharacterStats randomStats;
+        CharacterStats randomStats(0, 0, 0, 0, 0, 0);
         for (int i = 0; i < 9; i++) {
             int attr = qrand() % 6;
             if (attr == 0) {
