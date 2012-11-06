@@ -10,6 +10,7 @@ function MapEditor(element) {
     this.selectedRoomElement = null;
 
     this.exitEditor = null;
+    this.exitDeleteDialog = null;
     this.zoomSlider = null;
     this.perspectiveSlider = null;
 
@@ -45,6 +46,10 @@ function MapEditor(element) {
         self.exitEditor = new ExitEditor();
     });
 
+    loadScript("admin/exitdeletedialog.js", function() {
+        self.exitDeleteDialog = new ExitDeleteDialog();
+    });
+
     loadScript("admin/slider.widget.js", function() {
         self.zoomSlider = new SliderWidget(element.querySelector(".zoom.slider"), {
             "width": 200,
@@ -68,13 +73,8 @@ MapEditor.prototype.attachListeners = function() {
     var self = this;
 
     this.map.addChangeListener(function() {
-        if (self.selectedRoomId !== 0) {
-            var room = self.map.rooms[self.selectedRoomId];
-            self.selectedRoomElement.querySelector(".name").textContent = room.name;
-            self.selectedRoomElement.querySelector(".description").textContent = room.description;
-            self.selectedRoomElement.querySelector(".x").value = room.x;
-            self.selectedRoomElement.querySelector(".y").value = room.y;
-            self.selectedRoomElement.querySelector(".z").value = room.z;
+        if (self.selectedRoomId) {
+            self.onRoomSelectionChanged();
         }
     });
 
@@ -96,7 +96,8 @@ MapEditor.prototype.attachListeners = function() {
 
     this.selectedRoomElement.querySelector(".enter-room-button").addEventListener("click", function() {
         if (self.selectedRoomId) {
-            controller.sendCommand("enter-room #" + self.selectedRoomId); 
+            controller.sendCommand("enter-room #" + self.selectedRoomId);
+            self.close();
         }
     });
 
@@ -124,7 +125,12 @@ MapEditor.prototype.attachListeners = function() {
     }, false);
 
     this.selectedRoomElement.querySelector(".add.exit").addEventListener("click", function() {
-
+        self.exitEditor.add(self.selectedRoomId, {
+            "onsave": function(exit) {
+                self.map.setExit(exit);
+                self.exitEditor.close();
+            }
+        });
     }, false);
 
     this.selectedRoomElement.querySelector(".x").addEventListener("change", function(event) {
@@ -198,9 +204,28 @@ MapEditor.prototype.onRoomSelectionChanged = function() {
         exitsSpan.appendChild(exitSpan);
 
         exitSpan.addEventListener("click", function() {
-            self.exitEditor.edit(exit, {
+            self.exitEditor.edit(room.id, exit, {
                 "onsave": function(exit) {
                     self.map.setExit(exit);
+                    self.exitEditor.close();
+                },
+                "ondelete": function(exitId) {
+                    if (exit.oppositeExit) {
+                        self.exitDeleteDialog.show({
+                            "ondeleteone": function() {
+                                self.map.deleteExit(exit.id);
+                                self.exitDeleteDialog.close();
+                            },
+                            "ondeleteboth": function() {
+                                self.map.deleteExit(exit.id);
+                                self.map.deleteExit(exit.oppositeExit.id);
+                                self.exitDeleteDialog.close();
+                            }
+                        });
+                    } else {
+                        self.map.deleteExit(exitId);
+                    }
+
                     self.exitEditor.close();
                 }
             });
