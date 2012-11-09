@@ -4,6 +4,7 @@ FoggyText-build*
 FoggyText.pro.user*
 Makefile
 moc_*.cpp
+qrc_*.cpp
 
 # XCode project
 *.xcodeproj
