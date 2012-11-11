@@ -27,8 +27,6 @@ class GenerateEnvironmentCommand : public AdminCommand {
         Room *createRoomAt(const Point3D &position);
 
         void connectRooms(Room *roomA, Room *roomB);
-
-        QString directionForVector(const Vector3D &vector);
 };
 
 #endif // GENERATECOMMAND_H

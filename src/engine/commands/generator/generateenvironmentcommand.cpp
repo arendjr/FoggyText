@@ -5,6 +5,7 @@
 #include "exit.h"
 #include "realm.h"
 #include "room.h"
+#include "util.h"
 
 
 #define TAU 6.2831853071
@@ -192,39 +193,9 @@ void GenerateEnvironmentCommand::connectRooms(Room *roomA, Room *roomB) {
     aToB->setDestination(roomB);
     bToA->setDestination(roomA);
 
-    aToB->setName(directionForVector(roomA->position() - roomB->position()));
-    bToA->setName(directionForVector(roomB->position() - roomA->position()));
+    aToB->setName(Util::directionForVector(roomB->position() - roomA->position()));
+    bToA->setName(Util::directionForVector(roomA->position() - roomB->position()));
 
     aToB->setOppositeExit(bToA);
     bToA->setOppositeExit(aToB);
-}
-
-QString GenerateEnvironmentCommand::directionForVector(const Vector3D &vector) {
-
-    if (10 * abs(vector.z) > sqrt(pow(vector.x, 2) + pow(vector.y, 2))) {
-        if (vector.z > 0) {
-            return "down";
-        } else {
-            return "up";
-        }
-    } else {
-        double degrees = atan2(vector.y, vector.x) * 360.0 / TAU + 180.0;
-        if (degrees < 22.5 || degrees > 337.5) {
-            return "east";
-        } else if (degrees >= 22.5 && degrees < 67.5) {
-            return "southeast";
-        } else if (degrees >= 67.5 && degrees < 112.5) {
-            return "south";
-        } else if (degrees >= 112.5 && degrees < 157.5) {
-            return "southwest";
-        } else if (degrees >= 157.5 && degrees < 202.5) {
-            return "west";
-        } else if (degrees >= 202.5 && degrees < 247.5) {
-            return "northwest";
-        } else if (degrees >= 247.5 && degrees < 292.5) {
-            return "north";
-        } else {
-            return "northeast";
-        }
-    }
 }
