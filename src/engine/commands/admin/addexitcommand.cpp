@@ -58,6 +58,31 @@ void AddExitCommand::execute(Player *player, const QString &command) {
         return;
     }
 
+    Point3D position(0, 0, 0);
+    if (destinationId == "new") {
+        QString distanceOrVector = takeRest();
+        if (distanceOrVector.startsWith("[") && distanceOrVector.endsWith("]")) {
+            Vector3D vector = Vector3D::fromUserString(distanceOrVector);
+            position = currentRoom()->position() + vector;
+        } else if (!distanceOrVector.isEmpty()) {
+            int distance = distanceOrVector.toInt();
+            if (distance == 0) {
+                send("Invalid distance or vector given.");
+                return;
+            }
+            if (!Util::isDirection(exitName)) {
+                send("Giving a distance is only supported when the exit name is a direction.");
+                return;
+            }
+            position = currentRoom()->position() + distance * Util::vectorForDirection(exitName);
+        }
+    }
+
+    if (!destination) {
+        destination = new Room(realm());
+        destination->setPosition(position);
+    }
+
     Exit *exit = new Exit(realm());
     exit->setName(exitName);
     exit->setDestination(destination);
