@@ -1,8 +1,9 @@
-# Qt Creator build
-FoggyText
-FoggyText-build*
-FoggyText.pro.user*
+# Qt build
 Makefile
+FoggyText
+exits2portals
+*-build-desktop*
+*.pro.user*
 moc_*.cpp
 qrc_*.cpp
 
