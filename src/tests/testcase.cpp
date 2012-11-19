@@ -2,6 +2,7 @@
 
 #include <QTest>
 
+#include "diskutil.h"
 #include "engine.h"
 #include "player.h"
 #include "portal.h"
@@ -12,6 +13,12 @@
 void TestCase::initTestCase() {
 
     qputenv("PT_DATA_DIR", "data");
+
+    for (const QString &fileName : DiskUtil::dataDirFileList()) {
+        if (!fileName.startsWith("realm.")) {
+            QFile::remove(DiskUtil::dataDir() + "/" + fileName);
+        }
+    }
 
     m_engine = new Engine();
     bool started = m_engine->start();
@@ -42,7 +49,7 @@ void TestCase::createTestWorld() {
     roomA->setName("Room A");
 
     Room *roomB = new Room(realm);
-    roomA->setName("Room B");
+    roomB->setName("Room B");
 
     Portal *portal = new Portal(realm);
     portal->setRoom(roomA);
@@ -57,6 +64,11 @@ void TestCase::createTestWorld() {
     Player *player = new Player(realm);
     player->setName("Arie");
     player->setCurrentRoom(roomA);
+
+    QCOMPARE(roomA->id(), (unsigned) 1);
+    QCOMPARE(roomB->id(), (unsigned) 2);
+    QCOMPARE(portal->id(), (unsigned) 3);
+    QCOMPARE(player->id(), (unsigned) 4);
 }
 
 void TestCase::destroyTestWorld() {
