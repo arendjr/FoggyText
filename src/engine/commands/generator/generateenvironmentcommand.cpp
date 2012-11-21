@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "exit.h"
+#include "portal.h"
 #include "realm.h"
 #include "room.h"
 #include "util.h"
@@ -184,18 +184,12 @@ Room *GenerateEnvironmentCommand::createRoomAt(const Point3D &position) {
 
 void GenerateEnvironmentCommand::connectRooms(Room *roomA, Room *roomB) {
 
-    Exit *aToB = new Exit(realm());
-    Exit *bToA = new Exit(realm());
+    Portal *portal = new Portal(realm());
+    portal->setRoom(roomA);
+    portal->setRoom2(roomB);
+    portal->setName(Util::directionForVector(roomB->position() - roomA->position()));
+    portal->setName2(Util::directionForVector(roomA->position() - roomB->position()));
 
-    roomA->addExit(aToB);
-    roomB->addExit(bToA);
-
-    aToB->setDestination(roomB);
-    bToA->setDestination(roomA);
-
-    aToB->setName(Util::directionForVector(roomB->position() - roomA->position()));
-    bToA->setName(Util::directionForVector(roomA->position() - roomB->position()));
-
-    aToB->setOppositeExit(bToA);
-    bToA->setOppositeExit(aToB);
+    roomA->addPortal(portal);
+    roomB->addPortal(portal);
 }
