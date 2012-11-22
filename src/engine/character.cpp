@@ -702,11 +702,7 @@ void Character::take(const GameObjectPtrList &items) {
         GameObjectPtrList takenItems;
         for (const GameObjectPtr &itemPtr : items) {
             Item *item = itemPtr.cast<Item *>();
-            if (item->name().endsWith("worth of gold")) {
-                adjustGold(item->cost());
-                room->removeItem(itemPtr);
-                takenItems << itemPtr;
-            } else if (item->isPortable()) {
+            if (item->isPortable()) {
                 if (inventoryWeight() + item->weight() <= maxInventoryWeight()) {
                     addInventoryItem(itemPtr);
                     room->removeItem(itemPtr);
@@ -870,29 +866,14 @@ void Character::die(const GameObjectPtr &attacker) {
         QString myName = definiteName(room->characters(), Capitalized);
         others.send(QString("%1 died.").arg(myName), Teal);
 
-        if (inventory().length() > 0 || m_gold > 0.0) {
-            QString droppedItemsDescription;
-
-            if (inventory().length() > 0) {
-                for (const GameObjectPtr &item : inventory()) {
-                    room->addItem(item);
-                }
-
-                droppedItemsDescription = inventory().joinFancy();
-
-                setInventory(GameObjectPtrList());
+        if (inventory().length() > 0) {
+            for (const GameObjectPtr &item : inventory()) {
+                room->addItem(item);
             }
 
-            if (m_gold > 0.0) {
-                room->addGold(m_gold);
+            QString droppedItemsDescription = inventory().joinFancy();
 
-                if (!droppedItemsDescription.isEmpty()) {
-                    droppedItemsDescription += " and ";
-                }
-                droppedItemsDescription += QString("$%1 worth of gold").arg(m_gold);
-
-                m_gold = 0.0;
-            }
+            setInventory(GameObjectPtrList());
 
             others.send(QString("%1 was carrying %2.").arg(myName, droppedItemsDescription), Teal);
         }

@@ -9,7 +9,7 @@
 GetCommand::GetCommand(QObject *parent) :
     super(parent) {
 
-    setDescription("Take an item or gold from the current area or a container and put it in your "
+    setDescription("Take an item from the current area or a container and put it in your "
                    "inventory.\n"
                    "\n"
                    "Examples: get stick, take stick, get gold, get stick from bag");

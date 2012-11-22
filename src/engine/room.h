@@ -51,8 +51,6 @@ class Room : public GameObject {
         Q_PROPERTY(GameEventMultiplierMap eventMultipliers READ eventMultipliers
                                                            WRITE setEventMultipliers)
 
-        Q_INVOKABLE void addGold(double amount);
-
         GameObjectPtrList characters() const { return m_players + m_npcs; }
         Q_PROPERTY(GameObjectPtrList characters READ characters STORED false)
 
