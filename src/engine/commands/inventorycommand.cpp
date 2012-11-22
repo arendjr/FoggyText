@@ -33,12 +33,5 @@ void InventoryCommand::execute(Player *player, const QString &command) {
                                       Util::formatWeight(player->inventoryWeight()));
     }
 
-    QString carriedGoldString;
-    if (player->gold() == 0.0) {
-        carriedGoldString = "You don't have any gold.\n";
-    } else {
-        carriedGoldString = QString("You've got $%1 worth of gold.\n").arg(player->gold());
-    }
-
-    send(carriedInventoryString + carriedGoldString);
+    send(carriedInventoryString);
 }
