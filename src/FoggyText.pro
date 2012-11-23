@@ -72,7 +72,6 @@ SOURCES += \
     engine/commands/losecommand.cpp \
     engine/commands/quitcommand.cpp \
     engine/commands/removecommand.cpp \
-    engine/commands/saycommand.cpp \
     engine/commands/scriptcommand.cpp \
     engine/commands/searchcommand.cpp \
     engine/commands/shoutcommand.cpp \
@@ -208,7 +207,6 @@ HEADERS += \
     engine/commands/losecommand.h \
     engine/commands/quitcommand.h \
     engine/commands/removecommand.h \
-    engine/commands/saycommand.h \
     engine/commands/scriptcommand.h \
     engine/commands/searchcommand.h \
     engine/commands/shoutcommand.h \
@@ -284,6 +282,7 @@ OTHER_FILES += \
     ../data/commands/drinkcommand.js \
     ../data/commands/opencommand.js \
     ../data/commands/putcommand.js \
+    ../data/commands/saycommand.js \
     ../data/commands/admin/enterroomcommand.js \
     ../web/index.html \
     ../web/css/admin.css \
