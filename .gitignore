@@ -9,9 +9,6 @@ qrc_*.cpp
 # XCode project
 *.xcodeproj
 
-# Don't save user data
-player.*
-
 # Compiled Object files
 *.slo
 *.lo
