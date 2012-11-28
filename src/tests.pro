@@ -2,7 +2,7 @@ include(FoggyText.pro)
 
 TARGET = tests
 
-CONFIG  += qtestlib
+CONFIG += qtestlib
 
 SOURCES -= \
     main.cpp \
