@@ -44,8 +44,6 @@ SOURCES += \
     engine/commands/getcommand.cpp \
     engine/commands/givecommand.cpp \
     engine/commands/gocommand.cpp \
-    engine/commands/groupcommand.cpp \
-    engine/commands/gtalkcommand.cpp \
     engine/commands/helpcommand.cpp \
     engine/commands/inventorycommand.cpp \
     engine/commands/killcommand.cpp \
@@ -177,8 +175,6 @@ HEADERS += \
     engine/commands/getcommand.h \
     engine/commands/givecommand.h \
     engine/commands/gocommand.h \
-    engine/commands/groupcommand.h \
-    engine/commands/gtalkcommand.h \
     engine/commands/helpcommand.h \
     engine/commands/inventorycommand.h \
     engine/commands/killcommand.h \
@@ -275,6 +271,8 @@ OTHER_FILES += \
     ../data/commands/closecommand.js \
     ../data/commands/drinkcommand.js \
     ../data/commands/eatcommand.js \
+    ../data/commands/groupcommand.js \
+    ../data/commands/gtalkcommand.js \
     ../data/commands/opencommand.js \
     ../data/commands/putcommand.js \
     ../data/commands/quitcommand.js \
