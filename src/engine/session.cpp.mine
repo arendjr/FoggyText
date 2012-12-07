@@ -1,0 +1,479 @@
+#include "session.h"
+
+#include <QDebug>
+#include <QMap>
+
+#include "commandevent.h"
+#include "constants.h"
+#include "gameexception.h"
+#include "gameobjectptr.h"
+#include "logutil.h"
+#include "player.h"
+#include "realm.h"
+#include "scriptengine.h"
+#include "signinevent.h"
+#include "util.h"
+
+
+<<<<<<< HEAD
+struct Session::SignUpData {
+
+    QString userName;
+    QString password;
+
+    QString gender;
+};
+
+Session::Session(Realm *realm, const QString &source, QObject *parent) :
+=======
+Session::Session(Realm *realm, const QString &description, const QString &source, QObject *parent) :
+>>>>>>> 97ccc58... Move session handling to JavaScript -- unfinished.
+    QObject(parent),
+    m_source(source),
+    m_sessionState(SessionClosed),
+    m_realm(realm),
+    m_player(nullptr) {
+
+    LogUtil::logSessionEvent(m_source, QString("Session opened (%1)").arg(description));
+}
+
+Session::~Session() {
+
+    LogUtil::logSessionEvent(m_source, "Session closed");
+
+    if (m_player && m_player->session() == this) {
+        LogUtil::logCommand(m_player->name(), "(signed out)");
+
+        m_player->setSession(nullptr);
+    }
+}
+
+void Session::open() {
+
+<<<<<<< HEAD
+    setSignInStage(AskingUserName);
+    askForUserName();
+}
+
+void Session::processSignIn(const QString &data) {
+
+    if (m_signInStage == SignedIn) {
+        CommandEvent event(m_player, data);
+        event.process();
+        return;
+    } else if (m_signInStage == SessionClosed) {
+        return;
+    }
+
+    QString input = data.trimmed();
+    QString answer = input.toLower();
+
+    switch (m_signInStage) {
+        case AskingUserName:
+            processUserName(answer);
+            break;
+
+        case AskingUserNameConfirmation:
+            processUserNameConfirmation(answer);
+            break;
+
+        case AskingPassword:
+            processPassword(input);
+            break;
+
+        case AskingSignupPassword:
+            processSignupPassword(input);
+            break;
+
+        case AskingSignupPasswordConfirmation:
+            processSignupPasswordConfirmation(input);
+            break;
+
+        case AskingGender:
+            processGender(answer);
+            break;
+
+        case AskingSignupConfirmation:
+            processSignupConfirmation(answer);
+            break;
+
+        default:
+            break;
+    }
+
+    switch (m_signInStage) {
+        case AskingUserName:
+            askForUserName();
+            break;
+
+        case AskingUserNameConfirmation:
+            askForUserNameConfirmation();
+            break;
+
+        case AskingPassword:
+            askForPassword();
+            break;
+
+        case AskingSignupPassword:
+            askForSignupPassword();
+            break;
+
+        case AskingSignupPasswordConfirmation:
+            askForSignupPasswordConfirmation();
+            break;
+
+        case AskingGender:
+            askForGender();
+            break;
+
+        case AskingSignupConfirmation:
+            askForSignupConfirmation();
+            break;
+
+        case SignedIn:
+            m_player->setSession(this);
+            connect(m_player, SIGNAL(write(QString)), this, SIGNAL(write(QString)));
+
+            m_player->enter(m_player->currentRoom());
+            break;
+
+        case SignInAborted:
+            write("Ok. Bye.");
+            emit terminate();
+            break;
+
+        default:
+            break;
+    }
+}
+=======
+    try {
+        setSessionState(SigningIn);
+>>>>>>> 97ccc58... Move session handling to JavaScript -- unfinished.
+
+        ScriptEngine *engine = ScriptEngine::instance();
+        m_scriptObject = engine->evaluate("new SessionHandler()");
+        QScriptValue setSession = m_scriptObject.property("setSession");
+        QScriptValueList args;
+        args.append(engine->toScriptValue(this));
+        setSession.call(m_scriptObject, args);
+
+        if (engine->hasUncaughtException()) {
+            QScriptValue exception = engine->uncaughtException();
+            qWarning() << "Script Exception in Session::open(): " << exception.toString();
+        }
+    } catch (GameException &exception) {
+        qDebug() << "Exception in Session::open(): " << exception.what();
+    }
+}
+
+<<<<<<< HEAD
+void Session::setSignInStage(Session::SignInStage signInStage) {
+
+    if (m_signInStage == signInStage) {
+        return;
+    }
+
+    m_signInStage = signInStage;
+
+    switch (m_signInStage) {
+        case AskingUserName:
+            startAskingUserName();
+            break;
+
+        case AskingUserNameConfirmation:
+            startAskingUserNameConfirmation();
+            break;
+
+        case AskingPassword:
+            startAskingPassword();
+            break;
+
+        case AskingSignupPassword:
+            startAskingSignupPassword();
+            break;
+
+        case AskingSignupPasswordConfirmation:
+            startAskingSignupPasswordConfirmation();
+            break;
+
+        case AskingGender:
+            startAskingGender();
+            break;
+
+        case AskingSignupConfirmation:
+            startAskingSignupConfirmation();
+=======
+void Session::setSessionState(int sessionState) {
+
+    m_sessionState = (SessionState) sessionState;
+
+    switch (m_sessionState) {
+        case SessionClosed:
+            emit terminate();
+>>>>>>> 97ccc58... Move session handling to JavaScript -- unfinished.
+            break;
+
+        case SigningIn: {
+            break;
+        }
+
+        case SignedIn: {
+            if (!m_player) {
+                throw GameException(GameException::InvalidSignIn,
+                                    "Player object should have been set");
+            }
+
+            m_player->setSession(this);
+            break;
+        }
+    }
+}
+
+<<<<<<< HEAD
+void Session::startAskingSignupPassword() {
+}
+
+void Session::askForSignupPassword() {
+
+    write("Please choose a password: ");
+}
+
+void Session::processSignupPassword(const QString &input) {
+
+    if (input.length() < 6) {
+        write(Util::colorize("Please choose a password of at least 6 characters.\n", Red));
+        return;
+    }
+    if (input.toLower() == m_signUpData->userName.toLower()) {
+        write(Util::colorize("Your password and your username may not be the same.\n", Red));
+        return;
+    }
+    if (input == "123456" || input == "654321") {
+        write(Util::colorize("Sorry, that password is too simple.\n", Red));
+        return;
+    }
+    m_signUpData->password = input;
+    setSignInStage(AskingSignupPasswordConfirmation);
+}
+
+void Session::startAskingSignupPasswordConfirmation() {
+}
+
+void Session::askForSignupPasswordConfirmation() {
+
+    write("Please confirm your password: ");
+}
+
+void Session::processSignupPasswordConfirmation(const QString &input) {
+
+    if (m_signUpData->password == input) {
+        write(Util::colorize("Password confirmed.\n", Green));
+        setSignInStage(AskingGender);
+    } else {
+        write(Util::colorize("Passwords don't match.\n", Red));
+        setSignInStage(AskingSignupPassword);
+    }
+}
+
+void Session::startAskingGender() {
+=======
+void Session::processSignIn(const QString &data) {
+
+    try {
+        switch (m_sessionState) {
+            case SessionClosed:
+                break;
+
+            case SigningIn: {
+                QScriptValue processSignIn = m_scriptObject.property("processSignIn");
+                QScriptValueList args;
+                args.append(data.trimmed());
+                processSignIn.call(m_scriptObject, args);
+                break;
+            }
+
+            case SignedIn: {
+                CommandEvent event(m_player, data);
+                event.process();
+                break;
+            }
+        }
+
+        ScriptEngine *engine = ScriptEngine::instance();
+        if (engine->hasUncaughtException()) {
+            QScriptValue exception = engine->uncaughtException();
+            qWarning() << "Script Exception in Session::processSignIn(): " << exception.toString();
+        }
+    } catch (GameException &exception) {
+        qDebug() << "Exception in Session::processSignIn(): " << exception.what();
+    }
+}
+
+void Session::signOut() {
+
+    setSessionState(SessionClosed);
+}
+
+void Session::setPlayer(GameObject *player) {
+
+    m_player = qobject_cast<Player *>(player);
+    if (!m_player) {
+        throw GameException(GameException::InvalidGameObjectCast);
+    }
+}
+
+void Session::send(const QString &message) {
+>>>>>>> 97ccc58... Move session handling to JavaScript -- unfinished.
+
+    emit write(message);
+}
+
+<<<<<<< HEAD
+void Session::askForGender() {
+
+    write(QString("\n"
+                  "Please choose %1 or %2.\n"
+                  "\n")
+          .arg(Util::highlight("male"),
+               Util::highlight("female")));
+}
+
+void Session::processGender(const QString &answer) {
+
+    if (answer == "male" || answer == "m") {
+        write(Util::colorize("\nYou have chosen to be male.\n", Green));
+        m_signUpData->gender = "male";
+        setSignInStage(AskingSignupConfirmation);
+    } else if (answer == "female" || answer == "f") {
+        write(Util::colorize("\nYou have chosen to be female.\n", Green));
+        m_signUpData->gender = "female";
+        setSignInStage(AskingSignupConfirmation);
+    }
+}
+
+void Session::startAskingSignupConfirmation() {
+
+    write(QString("\n"
+                  "You will become a %1 soldier.\n"
+                  "\n")
+          .arg(m_signUpData->gender));
+}
+
+void Session::askForSignupConfirmation() {
+
+    write("\n"
+          "Are you ready to create this character?\n");
+}
+
+void Session::processSignupConfirmation(const QString &answer) {
+
+    if (answer == "yes" || answer == "y") {
+        QString salt = Util::randomString(8);
+        QByteArray data = QString(salt + m_signUpData->password).toUtf8();
+        QString hash = QCryptographicHash::hash(data, QCryptographicHash::Sha1).toBase64();
+
+        Race *humanRace = qobject_cast<Race *>(m_realm->getObject("race", 2));
+        Class *soldierClass = qobject_cast<Class *>(m_realm->getObject("class", 3));
+        CharacterStats stats = humanRace->stats() + soldierClass->stats();
+        int height = humanRace->height();
+        int weight = humanRace->weight();
+        if (m_signUpData->gender == "male") {
+            stats.strength++;
+            height += 10;
+            weight += 15;
+        } else {
+            stats.dexterity++;
+            weight -= 5;
+        }
+
+        CharacterStats randomStats(0, 0, 0, 0, 0, 0);
+        for (int i = 0; i < 9; i++) {
+            int attr = qrand() % 6;
+            if (attr == 0) {
+                randomStats.strength++;
+            } else if (attr == 1) {
+                randomStats.dexterity++;
+            } else if (attr == 2) {
+                randomStats.vitality++;
+            } else if (attr == 3) {
+                randomStats.endurance++;
+            } else if (attr == 4) {
+                randomStats.intelligence++;
+            } else {
+                randomStats.faith++;
+            }
+        }
+        stats += randomStats;
+        height += randomStats.intelligence - (randomStats.dexterity / 2);
+        weight += randomStats.strength;
+
+        m_player = new Player(m_realm);
+
+        m_player->setAdmin(m_realm->players().isEmpty());
+        m_player->setName(m_signUpData->userName);
+        m_player->setPasswordSalt(salt);
+        m_player->setPasswordHash(hash);
+        m_player->setRace(humanRace);
+        m_player->setClass(soldierClass);
+        m_player->setGender(m_signUpData->gender);
+        m_player->setStats(stats);
+        m_player->setHeight(height);
+        m_player->setWeight(weight);
+        m_player->setCurrentRoom(humanRace->startingRoom());
+
+        m_player->setHp(m_player->maxHp());
+        m_player->setMp(m_player->maxMp());
+        m_player->setGold(100);
+
+        delete m_signUpData;
+        m_signUpData = 0;
+
+        LogUtil::logSessionEvent(m_source, "Character created for player " + m_player->name());
+        LogUtil::logCommand(m_player->name(), "(signed in)");
+
+        write(QString("\nWelcome to %1, %2.\n").arg(m_realm->name(), m_player->name()));
+        setSignInStage(SignedIn);
+    } else if (answer == "no" || answer == "n" ||
+               answer == "back" || answer == "b") {
+        setSignInStage(AskingGender);
+    } else {
+        write("Please answer with yes or no.\n");
+    }
+}
+=======
+void Session::onUserInput(QString data) {
+
+    if (m_sessionState == SessionClosed) {
+        qDebug() << "User input on closed session";
+        return;
+    }
+
+    if (data.isEmpty()) {
+        return;
+    }
+
+    if (!m_player || !m_player->isAdmin()) {
+        data = data.left(160);
+    }
+
+    if (m_sessionState == SignedIn) {
+        m_realm->enqueueEvent(new CommandEvent(m_player, data));
+    } else {
+        m_realm->enqueueEvent(new SignInEvent(this, data));
+    }
+}
+
+QScriptValue Session::toScriptValue(QScriptEngine *engine, Session *const &session) {
+
+    return engine->newQObject(session, QScriptEngine::QtOwnership,
+                              QScriptEngine::ExcludeDeleteLater |
+                              QScriptEngine::PreferExistingWrapperObject);
+}
+
+void Session::fromScriptValue(const QScriptValue &object, Session *&session) {
+>>>>>>> 97ccc58... Move session handling to JavaScript -- unfinished.
+
+    session = qobject_cast<Session *>(object.toQObject());
+    Q_ASSERT(session);
+}

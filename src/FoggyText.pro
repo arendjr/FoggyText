@@ -285,6 +285,7 @@ OTHER_FILES += \
     ../data/commands/usecommand.js \
     ../data/commands/whocommand.js \
     ../data/commands/admin/enterroomcommand.js \
+    ../data/scripts/sessionhandler.js \
     ../web/index.html \
     ../web/css/admin.css \
     ../web/css/main.css \
@@ -308,7 +309,7 @@ OTHER_FILES += \
     ../web/js/codemirror/util/javascript-hint.js \
     ../web/js/codemirror/util/simple-hint.js \
     ../web/js/util.js \
-    ../web/js/controller.js
+    ../web/js/controller.js \
 
 INCLUDEPATH += \
     engine \
