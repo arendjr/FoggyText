@@ -129,109 +129,10 @@ function SessionHandler() {
             "processInput": function(input) {
                 if (signUpData.password === input) {
                     send("Password confirmed.\n", Color.Green);
-                    this.setState("AskingRace");
+                    this.setState("AskingGender");
                 } else {
                     send("Passwords don't match.\n", Color.Red);
                     this.setState("AskingSignUpPassword");
-                }
-            }
-        },
-
-        "AskingRace": {
-            "enter": function() {
-                if (!signUpData.races) {
-                    signUpData.races = {};
-                    Realm.races().forEach(function(race) {
-                        if (race.playerSelectable) {
-                            signUpData.races[race.name.toLower()] = race;
-                        }
-                    });
-                }
-
-                send(("\n" +
-                      "Please select which race you would like your character to be.\n" +
-                      "\n" +
-                      "Your race determines some attributes of the physique of your character, " +
-                      "as well as where in the %1 you will start your journey.\n" +
-                      "\n" +
-                      "These are the major races in the %1:\n" +
-                      "\n").arg(Realm.name) +
-                     Util.formatColumns(signUpData.races.keys(),
-                                        Options.Capitalized | Options.Highlighted));
-            },
-            "prompt": function() {
-                send("\n" +
-                     "Please select the race you would like to use, or type *info <race>* to get " +
-                     "more information about a race.\n");
-            },
-            "processInput": function(input) {
-                var answer = input.toLower();
-                if (signUpData.races.contains(answer)) {
-                    send("\nYou have chosen to become a %1.\n".arg(answer), Color.Green);
-                    signUpData.race = signUpData.races[answer];
-                    this.setState("AskingClass");
-                } else if (answer.startsWith("info ")) {
-                    var raceName = answer.mid(5).trimmed();
-                    if (signUpData.races.contains(raceName)) {
-                        var race = signUpData.races[raceName];
-                        send("\n" + raceName.capitalized().highlighted() + "\n  " +
-                             Util.splitLines(race.description, 78).join("\n  ") + "\n");
-                    } else if (raceName.startsWith("<") && raceName.endsWith(">")) {
-                        send("\nSorry, you are supposed to replace <race> with the name of an " +
-                             "actual race. For example: *info human*.\n");
-                    } else {
-                        send("\nI don't know anything about the \"%1\" race.\n".arg(raceName));
-                    }
-                }
-            }
-        },
-
-        "AskingClass": {
-            "enter": function() {
-                signUpData.classes = {};
-                signUpData.race.classes.forEach(function(characterClass) {
-                    signUpData.classes[characterClass.name.toLower()] = characterClass;
-                });
-
-                send("\n" +
-                     "Please select which class you would like your character to be specialized " +
-                     "in.\n" +
-                     "Your class determines additional attributes of the physique of your " +
-                     "character, and also can influence your choice to be good or evil.\n" +
-                     "\n" +
-                     "Note that the available classes are dependent on your choice of race. To " +
-                     "revisit your choice of race, type *back*.\n" +
-                     "\n" +
-                     "These are the classes you may choose from:\n" +
-                     "\n" +
-                     Util.formatColumns(signUpData.classes.keys(),
-                                        Options.Capitalized | Options.Highlighted));
-            },
-            "prompt": function() {
-                send("\n" +
-                     "Please select the class you would like to use, or type *info <class>* to " +
-                     "get more information about a class.\n");
-            },
-            "processInput": function(input) {
-                var answer = input.toLower();
-                if (signUpData.classes.contains(answer)) {
-                    send("\nYou have chosen to become a %1.\n".arg(answer), Color.Green);
-                    signUpData.characterClass = signUpData.classes[answer];
-                    this.setState("AskingGender");
-                } else if (answer.startsWith("info ")) {
-                    var className = answer.mid(5).trimmed();
-                    if (signUpData.classes.contains(className)) {
-                        var characterClass = signUpData.classes[className];
-                        send("\n" + className.capitalized().highlighted() + "\n  " +
-                              Util.splitLines(characterClass.description, 78).join("\n  ") + "\n");
-                    } else if (className.startsWith("<") && className.endsWith(">")) {
-                        send("\nSorry, you are supposed to replace <class> with the name of an " +
-                             "actual race. For example: *info knight*.\n");
-                    } else {
-                        send("\nI don't know anything about the \"%1\" class.\n".arg(className));
-                    }
-                } else if (answer === "back" || answer === "b") {
-                    this.setState("AskingRace");
                 }
             }
         },
@@ -264,178 +165,76 @@ function SessionHandler() {
             }
         },
 
-        "AskingExtraStats": {
-            "enter": function() {
-                var raceStats = signUpData.race.stats;
-                var classStats = signUpData.characterClass.stats;
-
-                var stats = {};
-                stats.strength = raceStats.strength + classStats.strength;
-                stats.dexterity = raceStats.dexterity + classStats.dexterity;
-                stats.vitality = raceStats.vitality + classStats.vitality;
-                stats.endurance = raceStats.endurance + classStats.endurance;
-                stats.intelligence = raceStats.intelligence + classStats.intelligence;
-                stats.faith = raceStats.faith + classStats.faith;
-                signUpData.stats = stats;
-
-                signUpData.height = signUpData.race.height;
-                signUpData.weight = signUpData.race.weight;
-
-                if (signUpData.characterClass.name === "knight") {
-                    signUpData.weight += 10;
-                } else if (signUpData.characterClass.name === "warrior" ||
-                           signUpData.characterClass.name === "soldier") {
-                    signUpData.weight += 5;
-                } else if (signUpData.characterClass.name === "barbarian") {
-                    signUpData.stats.intelligence = 0;
-                    signUpData.weight += 5;
-                }
-
-                if (signUpData.gender === "male") {
-                    signUpData.stats.strength++;
-                    signUpData.height += 10;
-                    signUpData.weight += 10;
-                } else {
-                    signUpData.stats.dexterity++;
-                    signUpData.weight -= 10;
-                }
-
-                send("\n" +
-                     "You have selected to become a %1 %2 %3.\n"
-                     .arg(signUpData.gender, signUpData.race.adjective,
-                          signUpData.characterClass.name) +
-                     "Your base character stats are: \n" +
-                     "\n" +
-                     "  *STR: %1*, *DEX: %2*, *VIT: %3*, *END: %4*, *INT: %5*, *FAI: %6*.\n"
-                     .arg(signUpData.stats.strength, signUpData.stats.dexterity,
-                          signUpData.stats.vitality, signUpData.stats.endurance,
-                          signUpData.stats.intelligence, signUpData.stats.faith) +
-                     "\n" +
-                     "You may assign an additional 9 points freely over your various " +
-                     "attributes.\n");
-            },
-            "prompt": function() {
-                var isBarbarian = (signUpData.characterClass.name === "barbarian");
-
-                send("\n" +
-                     "Please enter the distribution you would like to use in the following " +
-                     "form:\n" +
-                     "\n" +
-                     "  *%1*\n".arg(isBarbarian ? "<str> <dex> <vit> <end> <fai>" :
-                                                  "<str> <dex> <vit> <end> <int> <fai>") +
-                     "  (Replace every part with a number, for a total of 9. " +
-                        "Example: %1)\n".arg(isBarbarian ? "2 2 2 2 1" : "2 2 2 1 1 1") +
-                     "\n" +
-                     "To revisit your choice of gender, type *back*. If you want more " +
-                     "information about character stats, type *info stats*.\n");
-            },
-            "processInput": function(input) {
-                var answer = input.toLower();
-                if (answer === "info stats") {
-                    send("\n" +
-                         "Your character has several attributes, each of which will have a value " +
-                         "assigned. Collectively, we call these your character stats. Here is an " +
-                         "overview:\n" +
-                         "\n" +
-                         "*Strength* (STR)\n" +
-                         "  Strength primarily determines the power of your physical attacks. " +
-                         "When\n" +
-                         "  wielding a shield, it also gives a small defense power up.\n" +
-                         "\n" +
-                         "*Dexterity* (DEX)\n" +
-                         "  Dexterity determines the speed with which attacks can be dealt. It " +
-                         "also \n" +
-                         "  improves your chances of evading enemy attacks, and the chance of " +
-                         "success when\n" +
-                         "  fleeing.\n" +
-                         "\n" +
-                         "*Vitality* (VIT)\n" +
-                         "  Vitality primarily determines your max. health points (HP).\n" +
-                         "\n" +
-                         "*Endurance* (END)\n" +
-                         "  Endurance primarily determines your physical defense power.\n" +
-                         "\n" +
-                         "*Intelligence* (INT)\n" +
-                         "  Intelligence determines your max. magic points (MP).\n" +
-                         "\n" +
-                         "*Faith* (FAI)\n" +
-                         "  Faith determines the magical defense power. It also decreases the " +
-                         "chance that\n" +
-                         "  a spell will fail when cast.\n");
-                } else if (answer === "back" || answer === "b") {
-                    this.setState("AskingGender");
-                } else {
-                    var isBarbarian = (signUpData.characterClass.name === "barbarian");
-
-                    var attributes = answer.split(/\s+/);
-                    if (attributes.length !== (isBarbarian ? 5 : 6)) {
-                        return;
-                    }
-
-                    var stats = {};
-                    stats.strength = max(attributes[0].toInt(), 0);
-                    stats.dexterity = max(attributes[1].toInt(), 0);
-                    stats.vitality = max(attributes[2].toInt(), 0);
-                    stats.endurance = max(attributes[3].toInt(), 0);
-                    stats.intelligence = isBarbarian ? 0 : max(attributes[4].toInt(), 0);
-                    stats.faith = max(attributes[isBarbarian ? 4 : 5].toInt(), 0);
-
-                    if (stats.strength + stats.dexterity + stats.vitality +
-                        stats.endurance + stats.intelligence + stats.faith !== 9) {
-                        send("\nThe total of attributes should be 9.\n", Color.Red);
-                        return;
-                    }
-
-                    signUpData.stats.strength += stats.strength;
-                    signUpData.stats.dexterity += stats.dexterity;
-                    signUpData.stats.vitality += stats.vitality;
-                    signUpData.stats.strength += stats.strength;
-                    signUpData.stats.endurance += stats.endurance;
-                    signUpData.stats.faith += stats.faith;
-
-                    signUpData.height += stats.intelligence - Math.floor(stats.dexterity / 2);
-                    signUpData.weight += stats.strength;
-
-                    send("\nYour character stats have been recorded.\n", Color.Green);
-                    this.setState("AskingSignUpConfirmation");
-                }
-            }
-        },
-
         "AskingSignUpConfirmation": {
             "enter": function() {
                 send("\n" +
-                     "You have selected to become a %1 %2 %3.\n"
-                     .arg(signUpData.gender, signUpData.race.adjective,
-                          signUpData.characterClass.name) +
-                     "Your final character stats are: \n" +
-                     "\n" +
-                     "  *STR: %1*, *DEX: %2*, *VIT: %3*, *END: %4*, *INT: %5*, *FAI: %6*.\n"
-                     .arg(signUpData.stats.strength, signUpData.stats.dexterity,
-                          signUpData.stats.vitality, signUpData.stats.endurance,
-                          signUpData.stats.intelligence, signUpData.stats.faith));
+                     "You will become a %1 soldier.\n".arg(signUpData.gender) +
+                     "\n");
             },
             "prompt": function() {
                 send("\n" +
-                     "Are you ready to create a character with these stats?\n");
+                     "Are you ready to create this character?\n");
             },
             "processInput": function(input) {
                 var answer = input.toLower();
                 if (answer === "yes" || answer === "y") {
+                    var humanRace = Realm.getObject("Race", 2);
+                    var soldierClass = Realm.getObject("Class", 3);
+
+                    var stats = {};
+                    stats.strength = humanRace.strength + soldierClass.strength;
+                    stats.dexterity = humanRace.dexterity + soldierClass.dexterity;
+                    stats.vitality = humanRace.vitality + soldierClass.vitality;
+                    stats.endurance = humanRace.endurance + soldierClass.endurance;
+                    stats.intelligence = humanRace.intelligence + soldierClass.intelligence;
+                    stats.faith = humanRace.faith + soldierClass.faith;
+
+                    var height = humanRace.height;
+                    var weight = humanRace.weight;
+                    if (signUpData.gender === "male") {
+                        stats.strength++;
+                        height += 10;
+                        weight += 15;
+                    } else {
+                        stats.dexterity++;
+                        weight -= 5;
+                    }
+
+                    for (var i = 0; i < 9; i++) {
+                        var attr = randomInt(0, 6);
+                        if (attr === 0) {
+                            stats.strength++;
+                            weight++;
+                        } else if (attr === 1) {
+                            stats.dexterity++;
+                            if (byChange(1, 2)) {
+                                height--;
+                            }
+                        } else if (attr === 2) {
+                            stats.vitality++;
+                        } else if (attr === 3) {
+                            stats.endurance++;
+                        } else if (attr === 4) {
+                            stats.intelligence++;
+                            height++;
+                        } else {
+                            stats.faith++;
+                        }
+                    }
+
                     var player = Realm.createObject("Player");
                     player.admin = Realm.players().isEmpty();
                     player.name = signUpData.userName;
-                    player.race = signUpData.race;
-                    player.characterClass = signUpData.characterClass;
+                    player.race = humanRace;
+                    player.characterClass = soldierClass;
                     player.gender = signUpData.gender;
-                    player.stats = signUpData.stats;
-                    player.height = signUpData.height;
-                    player.weight = signUpData.weight;
-                    player.currentRoom = signUpData.race.startingRoom;
+                    player.stats = stats;
+                    player.height = height;
+                    player.weight = weight;
+                    player.currentRoom = humanRace.startingRoom;
 
                     player.hp = player.maxHp;
                     player.mp = player.maxMp;
-                    player.gold = 100;
 
                     player.setPassword(signUpData.password);
 
@@ -450,7 +249,7 @@ function SessionHandler() {
                     this.setState("SignedIn");
                 } else if (answer === "no" || answer === "n" ||
                            answer === "back" || answer === "b") {
-                    this.setState("AskingExtraStats");
+                    this.setState("AskingGender");
                 } else {
                     send("Please answer with yes or no.\n");
                 }
