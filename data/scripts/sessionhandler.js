@@ -181,44 +181,30 @@ function SessionHandler() {
                     var humanRace = Realm.getObject("Race", 2);
                     var soldierClass = Realm.getObject("Class", 3);
 
-                    var stats = {};
-                    stats.strength = humanRace.strength + soldierClass.strength;
-                    stats.dexterity = humanRace.dexterity + soldierClass.dexterity;
-                    stats.vitality = humanRace.vitality + soldierClass.vitality;
-                    stats.endurance = humanRace.endurance + soldierClass.endurance;
-                    stats.intelligence = humanRace.intelligence + soldierClass.intelligence;
-                    stats.faith = humanRace.faith + soldierClass.faith;
+                    var stats = humanRace.stats.plus(soldierClass.stats);
 
                     var height = humanRace.height;
                     var weight = humanRace.weight;
                     if (signUpData.gender === "male") {
-                        stats.strength++;
+                        stats[STRENGTH]++;
                         height += 10;
                         weight += 15;
                     } else {
-                        stats.dexterity++;
+                        stats[DEXTERITY]++;
                         weight -= 5;
                     }
 
                     for (var i = 0; i < 9; i++) {
                         var attr = randomInt(0, 6);
-                        if (attr === 0) {
-                            stats.strength++;
+                        stats[attr]++;
+                        if (attr === STRENGTH) {
                             weight++;
-                        } else if (attr === 1) {
-                            stats.dexterity++;
+                        } else if (attr === DEXTERITY) {
                             if (byChange(1, 2)) {
                                 height--;
                             }
-                        } else if (attr === 2) {
-                            stats.vitality++;
-                        } else if (attr === 3) {
-                            stats.endurance++;
-                        } else if (attr === 4) {
-                            stats.intelligence++;
+                        } else if (attr === INTELLIGENCE) {
                             height++;
-                        } else {
-                            stats.faith++;
                         }
                     }
 
