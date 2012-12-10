@@ -39,7 +39,6 @@ SOURCES += \
     engine/commands/dropcommand.cpp \
     engine/commands/equipmentcommand.cpp \
     engine/commands/followcommand.cpp \
-    engine/commands/getcommand.cpp \
     engine/commands/gocommand.cpp \
     engine/commands/helpcommand.cpp \
     engine/commands/inventorycommand.cpp \
@@ -165,7 +164,6 @@ HEADERS += \
     engine/commands/dropcommand.h \
     engine/commands/equipmentcommand.h \
     engine/commands/followcommand.h \
-    engine/commands/getcommand.h \
     engine/commands/gocommand.h \
     engine/commands/helpcommand.h \
     engine/commands/inventorycommand.h \
@@ -262,6 +260,7 @@ OTHER_FILES += \
     ../data/commands/closecommand.js \
     ../data/commands/drinkcommand.js \
     ../data/commands/eatcommand.js \
+    ../data/commands/getcommand.js \
     ../data/commands/givecommand.js \
     ../data/commands/groupcommand.js \
     ../data/commands/gtalkcommand.js \
