@@ -42,7 +42,6 @@ SOURCES += \
     engine/commands/helpcommand.cpp \
     engine/commands/inventorycommand.cpp \
     engine/commands/killcommand.cpp \
-    engine/commands/lookcommand.cpp \
     engine/commands/removecommand.cpp \
     engine/commands/scriptcommand.cpp \
     engine/commands/slashmecommand.cpp \
@@ -166,7 +165,6 @@ HEADERS += \
     engine/commands/helpcommand.h \
     engine/commands/inventorycommand.h \
     engine/commands/killcommand.h \
-    engine/commands/lookcommand.h \
     engine/commands/removecommand.h \
     engine/commands/scriptcommand.h \
     engine/commands/slashmecommand.h \
@@ -263,6 +261,7 @@ OTHER_FILES += \
     ../data/commands/givecommand.js \
     ../data/commands/groupcommand.js \
     ../data/commands/gtalkcommand.js \
+    ../data/commands/lookcommand.js \
     ../data/commands/losecommand.js \
     ../data/commands/opencommand.js \
     ../data/commands/putcommand.js \
@@ -280,9 +279,11 @@ OTHER_FILES += \
     ../data/scripts/sessionhandler.js \
     ../data/scripts/stats.js \
     ../data/scripts/gameobjects/character.js \
+    ../data/scripts/gameobjects/container.js \
     ../data/scripts/gameobjects/gameobject.js \
     ../data/scripts/gameobjects/item.js \
     ../data/scripts/gameobjects/player.js \
+    ../data/scripts/gameobjects/portal.js \
     ../data/scripts/gameobjects/statsitem.js \
     ../web/index.html \
     ../web/css/admin.css \
