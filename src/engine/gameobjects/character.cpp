@@ -43,7 +43,6 @@ Character::Character(Realm *realm, GameObjectType objectType, uint id, Options o
     m_gender("male"),
     m_respawnTime(0),
     m_respawnTimeVariation(0),
-    m_respawnTimerId(0),
     m_hp(1),
     m_maxHp(1),
     m_mp(0),
@@ -208,11 +207,6 @@ void Character::setRespawnTimeVariation(int respawnTimeVariation) {
     }
 }
 
-void Character::adjustHp(int delta) {
-
-    setHp(m_hp + delta);
-}
-
 void Character::setHp(int hp) {
 
     if (m_hp != hp) {
@@ -235,11 +229,6 @@ void Character::setMaxHp(int maxHp) {
     }
 }
 
-void Character::adjustMp(int delta) {
-
-    setMp(m_mp + delta);
-}
-
 void Character::setMp(int mp) {
 
     if (m_mp != mp) {
@@ -260,11 +249,6 @@ void Character::setMaxMp(int maxMp) {
 
         setModified();
     }
-}
-
-void Character::adjustGold(double delta) {
-
-    setGold(m_gold + delta);
 }
 
 void Character::setGold(double gold) {
@@ -707,43 +691,6 @@ void Character::tell(const GameObjectPtr &playerPtr, const QString &message) {
     }
 }
 
-void Character::take(const GameObjectPtrList &items) {
-
-    try {
-        Room *room = currentRoom().cast<Room *>();
-
-        GameObjectPtrList takenItems;
-        for (const GameObjectPtr &itemPtr : items) {
-            Item *item = itemPtr.cast<Item *>();
-            if (item->isPortable()) {
-                if (inventoryWeight() + item->weight() <=
-                    invokeScriptMethod("maxInventoryWeight").toInt32()) {
-                    addInventoryItem(itemPtr);
-                    room->removeItem(itemPtr);
-                    takenItems << itemPtr;
-                } else {
-                    send(QString("You can't take %2, because it's too heavy.")
-                         .arg(item->definiteName(room->items())));
-                }
-            } else {
-                send(QString("You can't take %2.").arg(item->definiteName(room->items())));
-            }
-        }
-
-        if (takenItems.length() > 0) {
-            QString description = takenItems.joinFancy(DefiniteArticles);
-            send(QString("You take %2.").arg(description));
-
-            GameObjectPtrList others = room->characters();
-            others.removeOne(this);
-            others.send(QString("%1 takes %3.").arg(definiteName(room->characters(), Capitalized),
-                                                    description));
-        }
-    } catch (GameException &exception) {
-        qDebug() << "Exception in Character::take(): " << exception.what();
-    }
-}
-
 void Character::wield(const GameObjectPtr &item) {
 
     try {
@@ -806,104 +753,6 @@ void Character::remove(const GameObjectPtr &item) {
         }
     } catch (GameException &exception) {
         qDebug() << "Exception in Character::remove(): " << exception.what();
-    }
-}
-
-void Character::kill(const GameObjectPtr &characterPtr) {
-
-    NO_STUN
-
-    try {
-        Character *character = characterPtr.cast<Character *>();
-
-        if (!character->invokeTrigger("onattack", this)) {
-            return;
-        }
-
-        Room *room = currentRoom().cast<Room *>();
-        GameObjectPtrList others = room->characters();
-        others.removeOne(this);
-        others.removeOne(characterPtr);
-
-        bool invoked = false;
-        if (room->hasTrigger("oncombat")) {
-            invoked = room->invokeTrigger("oncombat", this, characterPtr, others);
-        }
-        if (!invoked) {
-            realm()->invokeTrigger("oncombat", this, characterPtr, others);
-        }
-
-        for (const GameObjectPtr &other : others) {
-            other->invokeTrigger("oncharacterattacked", this, characterPtr);
-        }
-
-        if (character->hp() == 0) {
-            character->die(this);
-        }
-    } catch (GameException &exception) {
-        qDebug() << "Exception in Character::kill(): " << exception.what();
-    }
-}
-
-void Character::die(const GameObjectPtr &attacker) {
-
-    try {
-        if (!invokeTrigger("ondie", attacker)) {
-            return;
-        }
-
-        send("You died.", Red);
-
-        Room *room = currentRoom().cast<Room *>();
-
-        GameObjectPtrList others = room->characters();
-        others.removeOne(this);
-
-        QString myName = definiteName(room->characters(), Capitalized);
-        others.send(QString("%1 died.").arg(myName), Teal);
-
-        if (inventory().length() > 0) {
-            for (const GameObjectPtr &item : inventory()) {
-                room->addItem(item);
-            }
-
-            QString droppedItemsDescription = inventory().joinFancy();
-
-            setInventory(GameObjectPtrList());
-
-            others.send(QString("%1 was carrying %2.").arg(myName, droppedItemsDescription), Teal);
-        }
-
-        for (const GameObjectPtr &other : others) {
-            other->invokeTrigger("oncharacterdied", this, attacker);
-        }
-
-        killAllTimers();
-
-        room->removeCharacter(this);
-
-        if (isPlayer()) {
-            LogUtil::countPlayerDeath(currentRoom().toString());
-
-            enter(race().cast<Race *>()->startingRoom());
-
-            setHp(1);
-            stun(5000);
-        } else {
-            if (m_respawnTime) {
-                setInventory(GameObjectPtrList());
-
-                int respawnTime = m_respawnTime;
-                if (m_respawnTimeVariation) {
-                    respawnTime += qrand() % m_respawnTimeVariation;
-                }
-                m_respawnTimerId = realm()->startTimer(this, respawnTime);
-            } else {
-                setDeleted();
-            }
-        }
-    } catch (GameException &exception) {
-        qDebug() << "Exception in Character::die(): " << exception.what();
     }
 }
 
@@ -1115,18 +964,7 @@ GameObject *Character::copy() {
 
 void Character::invokeTimer(int timerId) {
 
-    if (timerId == m_respawnTimerId) {
-        m_respawnTimerId = 0;
-
-        m_hp = m_maxHp;
-        m_mp = m_maxMp;
-
-        setModified();
-
-        enter(currentRoom());
-
-        invokeTrigger("onspawn");
-    } else if (timerId == m_effectsTimerId) {
+    if (timerId == m_effectsTimerId) {
         int nextTimeout = updateEffects(QDateTime::currentMSecsSinceEpoch());
         m_effectsTimerId = (nextTimeout > -1 ? realm()->startTimer(this, nextTimeout) : 0);
     } else if (timerId == m_stunTimerId) {
@@ -1154,11 +992,6 @@ void Character::invokeTimer(int timerId) {
 void Character::killAllTimers() {
 
     super::killAllTimers();
-
-    if (m_respawnTimerId) {
-        realm()->stopTimer(m_respawnTimerId);
-        m_respawnTimerId = 0;
-    }
 
     clearEffects();
 
@@ -1194,8 +1027,13 @@ int Character::updateEffects(qint64 now) {
 
         int msecsLeft = (effect.started + effect.delay) - now;
         while (msecsLeft <= 0) {
-            adjustHp(effect.hpDelta);
-            adjustMp(effect.mpDelta);
+            if (effect.hpDelta != 0) {
+                m_hp = qBound(0, m_hp + effect.hpDelta, m_maxHp);
+            }
+            if (effect.mpDelta != 0) {
+                m_mp = qBound(0, m_mp + effect.mpDelta, m_maxMp);
+            }
+            setModified();
             send(effect.message);
 
             effect.numOccurrences--;
