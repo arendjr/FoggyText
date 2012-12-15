@@ -20,7 +20,7 @@ class GenerateEnvironmentCommand : public AdminCommand {
         virtual void execute(Player *player, const QString &command);
 
     private:
-        QList<Room *> generateScraperFloor(int level, const Point3D &center);
+        QList<Room *> generateScraperFloor(int district, int level, const Point3D &center);
         QList<Room *> generateRoof(const Point3D &topLeft, const Point3D &topRight,
                                    const Point3D &bottomLeft, const Point3D &bottomRight);
 
