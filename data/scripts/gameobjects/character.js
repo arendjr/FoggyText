@@ -259,11 +259,7 @@ Character.prototype.take = function(items) {
         var item = items[i];
         if (item.portable) {
             if (this.inventoryWeight() + item.weight <= this.maxInventoryWeight()) {
-                if (item.name.endsWith(" worth of gold")) {
-                    this.gold += item.cost;
-                } else {
-                    this.addInventoryItem(item);
-                }
+                this.addInventoryItem(item);
                 room.removeItem(item);
                 takenItems.append(item);
             } else {
@@ -297,17 +293,12 @@ Character.prototype.wield = function(item) {
         if (this.weapon === null) {
             this.send("You wield your %1.".arg(item.name));
             this.weapon = item;
+        } else if (this.weapon.name === item.name) {
+            this.send("You swap your %1 for another %2.".arg(this.weapon.name, item.name));
+            this.weapon = item;
         } else {
-            if (this.characterClass.name === "wanderer" && this.secondaryWeapon === null) {
-                this.send("You wield your %1 as secondary weapon.".arg(item.name));
-                this.secondaryWeapon = item;
-            } else if (this.weapon.name === item.name) {
-                this.send("You swap your %1 for another %2.".arg(this.weapon.name, item.name));
-                this.weapon = item;
-            } else {
-                this.send("You remove your %1 and wield your %2.".arg(this.weapon.name, item.name));
-                this.weapon = item;
-            }
+            this.send("You remove your %1 and wield your %2.".arg(this.weapon.name, item.name));
+            this.weapon = item;
         }
         inventory.removeOne(item);
         this.inventory = inventory;
