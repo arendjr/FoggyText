@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QSet>
 #include <QStringList>
+#include <QVector>
 
 #include "gameobject.h"
 #include "gameobjectptr.h"
@@ -39,7 +40,7 @@ class Realm : public GameObject {
         GameObject *getObject(GameObjectType objectType, uint id);
         Q_INVOKABLE GameObject *getObject(const QString &objectType, uint id);
         Q_INVOKABLE GameObject *createObject(const QString &objectType);
-        GameObjectPtrList allObjects(GameObjectType objectType) const;
+        QVector<GameObject *> allObjects(GameObjectType objectType) const;
 
         Q_INVOKABLE GameObjectPtrList players() const;
         Q_INVOKABLE GameObjectPtrList onlinePlayers() const;
@@ -109,6 +110,7 @@ class Realm : public GameObject {
         GameObjectPtrList m_areas;
         GameObjectPtrList m_races;
         GameObjectPtrList m_classes;
+        int m_numObjects[GameObjectType::NumValues];
 
         QDateTime m_dateTime;
         int m_timeIntervalId;
