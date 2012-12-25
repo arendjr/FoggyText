@@ -17,7 +17,7 @@ class GenerateEnvironmentCommand : public AdminCommand {
         GenerateEnvironmentCommand(QObject *parent = 0);
         virtual ~GenerateEnvironmentCommand();
 
-        virtual void execute(Player *player, const QString &command);
+        virtual void execute(Character *character, const QString &command);
 
     private:
         QList<Room *> generateScraperFloor(int district, int level, const Point3D &center);

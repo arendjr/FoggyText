@@ -25,9 +25,9 @@ GenerateEnvironmentCommand::GenerateEnvironmentCommand(QObject *parent) :
 GenerateEnvironmentCommand::~GenerateEnvironmentCommand() {
 }
 
-void GenerateEnvironmentCommand::execute(Player *player, const QString &command) {
+void GenerateEnvironmentCommand::execute(Character *character, const QString &command) {
 
-    super::prepareExecute(player, command);
+    super::prepareExecute(character, command);
 
     //generateScraperFloor(1, 10, Point3D(0, 0, 450));
     //generateScraperFloor(2, 10, Point3D(500, 0, 450));
