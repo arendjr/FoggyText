@@ -145,9 +145,7 @@ function SessionHandler() {
             },
             "prompt": function() {
                 send("\n" +
-                     "Please choose *male* or *female*.\n" +
-                     "\n" +
-                     "To revisit your choice of class, type *back*.\n");
+                     "Please choose *male* or *female*.\n");
             },
             "processInput": function(input) {
                 var answer = input.toLower();
@@ -159,8 +157,6 @@ function SessionHandler() {
                     send("\nYou have chosen to be female.\n", Color.Green);
                     signUpData.gender = "female";
                     this.setState("AskingExtraStats");
-                } else  if (answer === "back" || answer === "b") {
-                    this.setState("AskingClass");
                 }
             }
         },
@@ -200,7 +196,7 @@ function SessionHandler() {
                         if (attr === STRENGTH) {
                             weight++;
                         } else if (attr === DEXTERITY) {
-                            if (byChange(1, 2)) {
+                            if (byChance(1, 2)) {
                                 height--;
                             }
                         } else if (attr === INTELLIGENCE) {
@@ -208,7 +204,16 @@ function SessionHandler() {
                         }
                     }
 
-                    var player = Realm.createObject("Player");
+                    var player = Realm.getPlayer(signUpData.userName);
+                    if (player) {
+                        send("Uh-oh, it appears someone has claimed your character name while " +
+                             "you were creating yours. I'm terribly sorry, but it appears you " +
+                             "will have to start over.\n");
+                        this.setState("SessionClosed");
+                        return;
+                    }
+
+                    player = Realm.createObject("Player");
                     player.admin = Realm.players().isEmpty();
                     player.name = signUpData.userName;
                     player.race = humanRace;
