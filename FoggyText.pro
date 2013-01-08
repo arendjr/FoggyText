@@ -288,6 +288,7 @@ OTHER_FILES += \
     web/dialog/dialog.css \
     web/lib/fabric.js \
     web/lib/hogan.js \
+    web/lib/laces.js \
     web/lib/zepto.js \
     web/lib/codemirror/codemirror.css \
     web/lib/codemirror/codemirror.js \
