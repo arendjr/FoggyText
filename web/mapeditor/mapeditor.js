@@ -285,7 +285,8 @@ define(["controller", "loadingwidget/loading", "mapmodel/model", "mapeditor/mapv
 
         this.element.show();
 
-        this.model.map.load();
+        var sector = this.view.getVisibleSector();
+        this.model.map.load(sector.minX, sector.minY, sector.maxX, sector.maxY);
     };
 
     MapEditor.prototype.close = function() {

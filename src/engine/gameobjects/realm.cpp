@@ -117,6 +117,9 @@ void Realm::registerObject(GameObject *gameObject) {
         case GameObjectType::Area:
             m_areas.append(gameObject);
             break;
+        case GameObjectType::Room:
+            m_rooms.append(gameObject);
+            break;
         case GameObjectType::Class:
             m_classes.append(gameObject);
             break;

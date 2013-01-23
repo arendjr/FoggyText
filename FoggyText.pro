@@ -62,6 +62,7 @@ SOURCES += \
     src/engine/commands/api/portalsetcommand.cpp \
     src/engine/commands/api/propertygetcommand.cpp \
     src/engine/commands/api/propertysetcommand.cpp \
+    src/engine/commands/api/sectorgetcommand.cpp \
     src/engine/commands/api/triggergetcommand.cpp \
     src/engine/commands/api/triggersetcommand.cpp \
     src/engine/commands/api/triggerslistcommand.cpp \
@@ -171,6 +172,7 @@ HEADERS += \
     src/engine/commands/api/portalsetcommand.h \
     src/engine/commands/api/propertygetcommand.h \
     src/engine/commands/api/propertysetcommand.h \
+    src/engine/commands/api/sectorgetcommand.h \
     src/engine/commands/api/triggergetcommand.h \
     src/engine/commands/api/triggersetcommand.h \
     src/engine/commands/api/triggerslistcommand.h \

@@ -50,7 +50,7 @@ void GenerateEnvironmentCommand::execute(Character *character, const QString &co
     //generateScraperFloor(17, 10, Point3D(1500, 800, 450));
     //generateScraperFloor(18, 10, Point3D(2000, 800, 450));
     //generateScraperFloor(19, 10, Point3D(2500, 800, 450));
-    generateScraperFloor(20, 10, Point3D(3000, 800, 450));
+    //generateScraperFloor(20, 10, Point3D(3000, 800, 450));
     generateScraperFloor(21, 10, Point3D(3500, 800, 450));
 
     //generateScraperFloor(22, 10, Point3D(2250, 1200, 450));
@@ -58,6 +58,8 @@ void GenerateEnvironmentCommand::execute(Character *character, const QString &co
 
     generateRoof(Point3D(-250, -250, 470), Point3D(3250, -250, 470),
                  Point3D(250, 1050, 470), Point3D(3750, 1050, 470));
+
+    send("Environment generated");
 }
 
 QList<Room *> GenerateEnvironmentCommand::generateScraperFloor(int district, int level,

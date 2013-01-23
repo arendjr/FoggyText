@@ -5,6 +5,7 @@ define(["controller", "lib/hogan", "lib/zepto", "text!loadingwidget/loading.html
     "use strict";
 
     var loadingEl = null;
+    var startTime;
 
     function init() {
 
@@ -17,11 +18,17 @@ define(["controller", "lib/hogan", "lib/zepto", "text!loadingwidget/loading.html
     function showLoader() {
 
         loadingEl.show();
+
+        startTime = (new Date()).getTime();
     }
 
     function hideLoader() {
 
         loadingEl.hide();
+
+        var endTime = (new Date()).getTime();
+        var totalTime = endTime - startTime;
+        console.log("Loading took: " + totalTime + "ms");
     }
 
     init();

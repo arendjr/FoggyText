@@ -104,6 +104,27 @@ define(["lib/fabric", "loadingwidget/loading"], function(Fabric, Loading) {
         }
     };
 
+    MapView.prototype.getVisibleSector = function(options) {
+
+        options = options || {};
+
+        var canvasWidth = options.width || this.container.width();
+        var canvasHeight = options.height || this.container.height();
+
+        var center = options.center || this.center;
+        var offsetX = options.offsetX === undefined ? Math.floor(canvasWidth / 2) : options.offsetX;
+        var offsetY = options.offsetY === undefined ? Math.floor(canvasHeight / 2): options.offsetY;
+
+        var zoom = 10 * this.zoom;
+
+        return {
+            "minX": this.center.x - offsetX / zoom - ROOM_SIZE,
+            "minY": this.center.y - offsetY / zoom - ROOM_SIZE,
+            "maxX": this.center.x + offsetX / zoom + ROOM_SIZE,
+            "maxY": this.center.y + offsetY / zoom + ROOM_SIZE
+        }
+    };
+
     MapView.prototype.draw = function(options) {
 
         options = options || {};
@@ -128,36 +149,14 @@ define(["lib/fabric", "loadingwidget/loading"], function(Fabric, Loading) {
 
         var hiddenAreas = this.hiddenAreas;
         var zRestriction = this.zRestriction;
-        var isVisible;
-
-        var portals = this.model.portals;
-        var portalIds = [];
-        for (var portalId in portals) {
-            if (portals.hasOwnProperty(portalId)) {
-                var portal = portals[portalId];
-                if (!portal.room || !portal.room2) {
-                    continue;
-                }
-
-                isVisible = (zoom >= 2 &&
-                             (!portal.room.area || !hiddenAreas.contains(portal.room.area)) &&
-                             (!portal.room2.area || !hiddenAreas.contains(portal.room2.area)) &&
-                             (zRestriction === null || portal.room.z === zRestriction ||
-                                                       portal.room2.z === zRestriction));
-                if (isVisible) {
-                    portalIds.append(portalId);
-                }
-            }
-        }
 
         var rooms = this.model.rooms;
         var roomIds = [];
         for (var roomId in rooms) {
             if (rooms.hasOwnProperty(roomId)) {
                 var room = rooms[roomId];
-                isVisible = ((!room.area || !hiddenAreas.contains(room.area)) &&
-                             (zRestriction === null || room.z === zRestriction));
-                if (isVisible) {
+                if ((!room.area || !hiddenAreas.contains(room.area)) &&
+                    (zRestriction === null || room.z === zRestriction)) {
                     roomIds.append(roomId);
                 }
             }
@@ -166,19 +165,19 @@ define(["lib/fabric", "loadingwidget/loading"], function(Fabric, Loading) {
         this.canvas.clear();
 
         var self = this;
-        portalIds.forEach(function(id) {
-            var portal = portals[id];
-            var room = portal.room;
-            var room2 = portal.room2;
-            var z1 = self.perspective * room.z;
-            var x1 = offsetX + (room.x - center.x + z1) * zoom;
-            var y1 = offsetY + (room.y - center.y + z1) * zoom;
-            var z2 = self.perspective * room2.z;
-            var x2 = offsetX + (room2.x - center.x + z2) * zoom;
-            var y2 = offsetY + (room2.y - center.y + z2) * zoom;
+        roomIds.forEach(function(id) {
+            var room = rooms[id];
+            var z = self.perspective * room.z;
+            var x = offsetX + (room.x - center.x + z) * zoom;
+            var y = offsetY + (room.y - center.y + z) * zoom;
 
-            if (isWithinCanvas(x1, y1) || isWithinCanvas(x2, y2)) {
-                var shape = new Fabric.Line([ x1, y1, x2, y2 ], {
+            function drawPortal(portal) {
+                var room2 = portal.room2;
+                var z2 = self.perspective * room2.z;
+                var x2 = offsetX + (room2.x - center.x + z2) * zoom;
+                var y2 = offsetY + (room2.y - center.y + z2) * zoom;
+
+                var shape = new Fabric.Line([ x, y, x2, y2 ], {
                     "fill": "blue",
                     "stroke": "blue",
                     "strokeWidth": ROOM_BORDER_WIDTH,
@@ -186,15 +185,12 @@ define(["lib/fabric", "loadingwidget/loading"], function(Fabric, Loading) {
                 });
                 self.canvas.add(shape);
             }
-        });
-
-        roomIds.forEach(function(id) {
-            var room = rooms[id];
-            var z = self.perspective * room.z;
-            var x = offsetX + (room.x - center.x + z) * zoom;
-            var y = offsetY + (room.y - center.y + z) * zoom;
 
             if (isWithinCanvas(x, y)) {
+                for (var i = 0, length = room.portals.length; i < length; i++) {
+                    drawPortal(room.portals[i]);
+                }
+
                 var fill = self.roomFills.contains(room.id) ? self.roomFills[room.id] : "grey";
                 var shape = new Fabric.Rect({
                     "id": room.id,

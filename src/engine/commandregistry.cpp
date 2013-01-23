@@ -37,6 +37,7 @@
 #include "commands/api/portalsetcommand.h"
 #include "commands/api/propertygetcommand.h"
 #include "commands/api/propertysetcommand.h"
+#include "commands/api/sectorgetcommand.h"
 #include "commands/api/triggergetcommand.h"
 #include "commands/api/triggersetcommand.h"
 #include "commands/api/triggerslistcommand.h"
@@ -77,6 +78,7 @@ CommandRegistry::CommandRegistry(QObject *parent) :
     m_apiCommands.insert("api-portal-set", new PortalSetCommand(this));
     m_apiCommands.insert("api-property-get", new PropertyGetCommand(this));
     m_apiCommands.insert("api-property-set", new PropertySetCommand(this));
+    m_apiCommands.insert("api-sector-get", new SectorGetCommand(this));
     m_apiCommands.insert("api-trigger-get", new TriggerGetCommand(this));
     m_apiCommands.insert("api-trigger-set", new TriggerSetCommand(this));
     m_apiCommands.insert("api-triggers-list", new TriggersListCommand(this));
