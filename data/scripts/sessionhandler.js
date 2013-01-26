@@ -167,11 +167,11 @@ function SessionHandler() {
                 if (answer === "male" || answer === "m") {
                     send("\nYou have chosen to be male.\n", Color.Green);
                     signUpData.gender = "male";
-                    this.setState("AskingExtraStats");
+                    this.setState("AskingSignUpConfirmation");
                 } else if (answer === "female" || answer === "f") {
                     send("\nYou have chosen to be female.\n", Color.Green);
                     signUpData.gender = "female";
-                    this.setState("AskingExtraStats");
+                    this.setState("AskingSignUpConfirmation");
                 }
             }
         },

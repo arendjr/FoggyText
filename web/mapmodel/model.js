@@ -220,11 +220,7 @@ define(["controller", "lib/laces"], function(Controller, Laces) {
         Laces.Model.call(this, {
             "areas": {},
             "portals": {},
-            "rooms": {},
-            "minX": 0,
-            "minY": 0,
-            "maxX": 0,
-            "maxY": 0
+            "rooms": {}
         });
 
         var self = this;
@@ -314,12 +310,7 @@ define(["controller", "lib/laces"], function(Controller, Laces) {
     MapModel.prototype = new Laces.Model();
     MapModel.prototype.constructor = MapModel;
 
-    MapModel.prototype.load = function(minX, minY, maxX, maxY) {
-
-        if (minX >= this.minX && minY >= this.minY && maxX <= this.maxX && maxY <= this.maxY) {
-            this.fire("change");
-            return;
-        }
+    MapModel.prototype.load = function() {
 
         var self = this;
         self.holdEvents();
@@ -328,48 +319,50 @@ define(["controller", "lib/laces"], function(Controller, Laces) {
         self.portals.holdEvents();
 
         Controller.sendApiCall("objects-list area", function(data) {
+            console.log("Got areas");
             for (var i = 0; i < data.length; i++) {
                 var area = new Area(self, data[i]);
                 self.areas.set(area.id, area);
             }
 
-            Controller.sendApiCall("sector-get " + minX + " " + minY + " " + maxX + " " + maxY,
-                                   function(data) {
-                for (var i = 0; i < data.rooms.length; i++) {
-                    var room = new Room(self, data.rooms[i]);
+            Controller.sendApiCall("objects-list room", function(data) {
+                console.log("Got rooms");
+                for (var i = 0; i < data.length; i++) {
+                    var room = new Room(self, data[i]);
                     self.rooms.set(room.id, room);
                 }
-                for (i = 0; i < data.portals.length; i++) {
-                    var portal = new Portal(self, data.portals[i]);
-                    self.portals.set(portal.id, portal);
-                }
 
-                for (var id in self.rooms) {
-                    if (self.rooms.hasOwnProperty(id)) {
-                        self.rooms[id].resolvePointers(["portals"]);
+                Controller.sendApiCall("objects-list portal", function(data) {
+                    console.log("Got portals");
+                    for (var i = 0; i < data.length; i++) {
+                        var portal = new Portal(self, data[i]);
+                        self.portals.set(portal.id, portal);
                     }
-                }
-                for (id in self.portals) {
-                    if (self.portals.hasOwnProperty(id)) {
-                        self.portals[id].resolvePointers(["room", "room2"]);
+
+                    console.log("Resolving pointers");
+                    for (var id in self.rooms) {
+                        if (self.rooms.hasOwnProperty(id)) {
+                            self.rooms[id].resolvePointers(["portals"]);
+                        }
                     }
-                }
-                for (id in self.areas) {
-                    if (self.areas.hasOwnProperty(id)) {
-                        self.areas[id].resolvePointers(["rooms"]);
+                    for (id in self.portals) {
+                        if (self.portals.hasOwnProperty(id)) {
+                            self.portals[id].resolvePointers(["room", "room2"]);
+                        }
                     }
-                }
+                    for (id in self.areas) {
+                        if (self.areas.hasOwnProperty(id)) {
+                            self.areas[id].resolvePointers(["rooms"]);
+                        }
+                    }
 
-                self.areas.fireHeldEvents();
-                self.rooms.fireHeldEvents();
-                self.portals.fireHeldEvents();
-
-                self.minX = minX;
-                self.minY = minY;
-                self.maxX = maxX;
-                self.maxY = maxY;
-
-                self.fireHeldEvents();
+                    console.log("Firing held events");
+                    self.areas.fireHeldEvents();
+                    self.rooms.fireHeldEvents();
+                    self.portals.fireHeldEvents();
+                    self.fireHeldEvents();
+                    console.log("Done");
+                });
             });
         });
     };

@@ -9,8 +9,6 @@
 
 Area::Area(Realm *realm, uint id, Options options) :
     super(realm, GameObjectType::Area, id, options) {
-
-    setAutoDelete(false);
 }
 
 Area::~Area() {
