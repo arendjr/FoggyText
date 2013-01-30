@@ -21,6 +21,11 @@ DropCommand.prototype.execute = function(player, command) {
     items.forEach(function(item) {
         player.currentRoom.addItem(item);
         player.removeInventoryItem(item);
+
+        for (var i = 0, length = player.currentRoom.characters.length; i < length; i++) {
+            var character = player.currentRoom.characters[i];
+            character.invokeTrigger("onitemdropped", item, player);
+        }
     });
 
     var description = items.joinFancy(Options.DefiniteArticles);
