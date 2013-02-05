@@ -51,7 +51,7 @@ GiveCommand.prototype.execute = function(player, command) {
     this.send("You give %1 to %2.", description, recipientName);
     recipient.send("%1 gives you %2.".arg(player.name, description));
 
-    var others = this.currentRoom.characters();
+    var others = this.currentRoom.characters;
     others.removeOne(player);
     others.removeOne(recipient);
     others.send("%1 gives %2 to %3.".arg(player.name, description, recipientName));
