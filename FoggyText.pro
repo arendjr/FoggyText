@@ -346,6 +346,3 @@ INCLUDEPATH += \
     3rdparty \
     3rdparty/qtiocompressor \
     3rdparty/qtwebsocket/QtWebSocket \
-
-RESOURCES += \
-    src/engine/resources.qrc
