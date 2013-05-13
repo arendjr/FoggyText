@@ -34,26 +34,29 @@ function SessionHandler() {
 
     this.states = {
         "AskingUserName": {
+            "enter": function() {
+                send(" == District 21 ==\n\n");
+            },
             "prompt": function() {
-                send("What is your name? ");
+                send("Unidentified Clone, enter your ID: ");
             },
             "processInput": function(input) {
-                var userName = Util.validateUserName(input.toLower());
-                if (userName.length < 3) {
-                    if (!userName.isEmpty()) {
-                        send("I'm sorry, but your name should consist of at least 3 letters.\n");
-                    }
-                    return;
+                if (input.substr(0, 1) === "c" || input.substr(0, 1) === "C") {
+                    input = input.substr(1);
                 }
 
-                var player = Realm.getPlayer(userName);
+                var cloneId = parseInt(input, 10);
+
+                var player;
+                if (cloneId >= 14) {
+                    player = Realm.getPlayer("C" + cloneId);
+                }
+
                 if (player) {
                     this.setPlayer(player);
                     this.setState("AskingPassword");
-                } else if (Realm.reservedNames().contains(userName)) {
-                    send("Yeah right, like I believe that...\n");
                 } else {
-                    signUpData.userName = userName;
+                    signUpData.userName = "C" + cloneId;
                     this.setState("AskingUserNameConfirmation");
                 }
             }
@@ -67,7 +70,7 @@ function SessionHandler() {
                 send({ "inputType": "text" });
             },
             "prompt": function() {
-                send("Please enter your password: ");
+                send(this.player.name + ", enter your passphrase: ");
             },
             "processInput": function(input) {
                 if (this.player.matchesPassword(input)) {
@@ -75,27 +78,26 @@ function SessionHandler() {
                                             "player " + this.player.name);
 
                     if (this.player.isOnline()) {
-                        send("Cannot sign you in because you're already signed in from another " +
-                             "location.\n");
+                        send("Rejected. Clone is already active from another terminal.\n");
                         this.setState("SessionClosed");
                         return;
                     }
 
-                    send("Welcome back, %1. Type *help* if you're feeling lost.\n"
-                         .arg(this.player.name));
+                    send(("%1 Authenticated. Restoring control to clone.\n" +
+                          "Type *help* for instructions.\n").arg(this.player.name));
                     this.setState("SignedIn");
                 }  else {
                     LogUtil.logSessionEvent(this._session.source, "Authentication failed for " +
                                             "player " + this.player.name);
 
-                    send("Password incorrect.\n");
+                    send("Authentication Failure.\n");
                 }
             }
         },
 
         "AskingUserNameConfirmation": {
             "prompt": function() {
-                send("%1, did I get that right? ".arg(signUpData.userName));
+                send("\n%1 Not Registered. Register? ".arg(signUpData.userName));
             },
             "processInput": function(input) {
                 var answer = input.toLower();
@@ -104,7 +106,7 @@ function SessionHandler() {
                 } else if (answer === "no" || answer === "n") {
                     this.setState("SignInAborted");
                 } else {
-                    send("Please answer with yes or no.\n");
+                    send("Enter *yes* or *no*.\n");
                 }
             }
         },
@@ -114,7 +116,7 @@ function SessionHandler() {
                 send({ "inputType": "password" });
             },
             "prompt": function() {
-                send("Please choose a password: ");
+                send("\nChoose a passphrase: ");
             },
             "processInput": function(input) {
                 if (input.length < 6) {

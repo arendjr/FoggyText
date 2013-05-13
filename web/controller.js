@@ -158,7 +158,7 @@ define(["lib/zepto"], function($) {
         });
 
         socket.addEventListener("open", function(message) {
-            writeToScreen("Connected.");
+            screen.empty();
         }, false);
 
         socket.addEventListener("message", function(message) {
@@ -183,8 +183,12 @@ define(["lib/zepto"], function($) {
 
                     delete pendingRequests[requestId];
                 } else if (data.player) {
-                    if (!player.isAdmin && data.player.isAdmin) {
+                    if (data.player.isAdmin && !player.isAdmin) {
                         require(["admin"]);
+                    }
+
+                    if (data.player.name && !player.name) {
+                        localStorage.setItem("cloneId", data.player.name);
                     }
 
                     player = data.player;
@@ -207,6 +211,9 @@ define(["lib/zepto"], function($) {
                 } else if (data.inputType) {
                     commandInput.attr("type", data.inputType);
                 }
+            } else if (message.data === "Unidentified Clone, enter your ID: " &&
+                       localStorage.getItem("cloneId")) {
+                sendCommand(localStorage.getItem("cloneId"));
             } else {
                 notifyIncomingMessageListeners(message.data);
 
