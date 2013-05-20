@@ -85,18 +85,24 @@ LookCommand.prototype.execute = function(player, command) {
         if (vector.angle(position) < Math.PI / 8) {
             var angle = Util.angleBetweenXYVectors(vector, position);
 
-            if (nearbyObject.isPortal()) {
-                player.send("On its %1 is %2.".arg(angle > 0 ? "right" : "left",
-                                                   nearbyObject.nameWithDestinationFromRoom(room)));
+            var name = (nearbyObject.isPortal() ? nearbyObject.nameWithDestinationFromRoom(room) :
+                                                  nearbyObject.indefiniteName());
+            var verb = (nearbyObject.isPortal() ? "is" :
+                                                  VERBS[nearbyObject.presenceVerb].thirdPerson);
+            if (angle === 0.0) {
+                if (vector.vectorLength() > position.vectorLength()) {
+                    player.send("Behind it %1 %2.".arg(verb, name));
+                } else {
+                    player.send("In front of it %1 %2.".arg(verb, name));
+                }
             } else {
-                player.send("On its %1 there's %2.".arg(angle > 0 ? "right" : "left",
-                                                        nearbyObject.indefiniteName()));
+                player.send("On its %1 %2 %3.".arg(angle < 0 ? "right" : "left", verb, name));
             }
         }
     }
 
     var showNearbyObjects = (object.isItem() && !object.position.equals([0, 0, 0])) ||
-                            object.isPortal();
+                            (object.isPortal() && !(Util.isDirection(object.nameFromRoom(room))));
     if (showNearbyObjects) {
         var vector = (object.isPortal() ? object.position.minus(room.position) : object.position);
         room.items.forEach(function(item) {
@@ -106,7 +112,10 @@ LookCommand.prototype.execute = function(player, command) {
         });
         room.portals.forEach(function(portal) {
             if (portal !== object) {
-                describeNearbyObject(portal, vector, portal.position.minus(room.position));
+                if (!Util.isDirection(portal.nameFromRoom(room)) &&
+                    !portal.omitFromDescriptionFromRoom(room)) {
+                    describeNearbyObject(portal, vector, portal.position.minus(room.position));
+                }
             }
         });
     }

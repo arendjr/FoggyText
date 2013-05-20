@@ -44,7 +44,7 @@ define(["controller", "lib/laces"], function(Controller, Laces) {
             }
             console.log("Could not resolve pointer: " + pointer);
             return null;
-        } else {
+        } else if (pointer && pointer.constructor && pointer.id) {
             return this.model[pointer.constructor.name.toLowerCase() + "s"][pointer.id];
         }
     };

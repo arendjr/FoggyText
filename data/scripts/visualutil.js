@@ -5,9 +5,10 @@ var VisualUtil = (function() {
     var OVER_QUART_PI = Math.PI / 3.99;
 
     var groupsTemplate = {
+        "front": [],
+        "ahead": [],
         "left": [],
         "right": [],
-        "ahead": [],
         "behind": [],
         "center": [],
         "above": [],
@@ -17,20 +18,21 @@ var VisualUtil = (function() {
         "ceiling": []
     };
 
-    function descriptionForGroup(group) {
+    function prefixForGroup(group) {
         switch (group) {
-            case "left":        return [ "To your left", "is", "are" ];
-            case "right":       return [ "To your right", "is", "are" ];
-            case "ahead":       return [ "Ahead of you, there", "is", "are" ];
-            case "behind":      return [ "Behind you", "is", "are" ];
-            case "above":       return [ "Above you", "is", "are" ];
-            case "left wall":   return [ "On the left wall", "hangs", "hang" ];
-            case "right wall":  return [ "On the right wall", "hangs", "hang" ];
-            case "wall":        return [ "On the wall", "hangs", "hang" ];
-            case "ceiling":     return [ "From the ceiling", "hangs", "hang" ];
-            case "distance":    return [ "In the distance", "you see", "you see" ];
-            case "roof":        return [ "On the roof", "you see", "you see" ];
-            default:            return [ "There", "is", "are" ];
+            case "left":        return "to your left";
+            case "right":       return "to your right";
+            case "front":       return "in front of you";
+            case "ahead":       return "ahead of you there";
+            case "behind":      return "behind you";
+            case "above":       return "above you";
+            case "left wall":   return "on the left wall";
+            case "right wall":  return "on the right wall";
+            case "wall":        return "on the wall";
+            case "ceiling":     return "from the ceiling";
+            case "distance":    return "in the distance you";
+            case "roof":        return "on the roof you";
+            default:            return "there";
         }
     }
 
@@ -63,7 +65,7 @@ var VisualUtil = (function() {
                 if (Math.abs(angle) > 3 * OVER_QUART_PI) {
                     groups["behind"].push(item);
                 } else if (Math.abs(angle) < UNDER_QUART_PI) {
-                    groups["ahead"].push(item);
+                    groups["front"].push(item);
                 } else if (angle > 0) {
                     groups["right"].push(item);
                 } else {
@@ -79,7 +81,7 @@ var VisualUtil = (function() {
         var groups = groupsTemplate.clone();
         for (var i = 0, length = room.portals.length; i < length; i++) {
             var portal = room.portals[i];
-            if (portal.isHiddenFromRoom(room)) {
+            if (portal.isHiddenFromRoom(room) || portal.omitFromDescriptionFromRoom(room)) {
                 continue;
             }
 
@@ -100,7 +102,7 @@ var VisualUtil = (function() {
                 groups["behind"].push(portal);
             } else if (Math.abs(angle) < UNDER_QUART_PI) {
                 groups["ahead"].push(portal);
-            } else if (angle > 0) {
+            } else if (angle < 0) {
                 groups["right"].push(portal);
             } else {
                 groups["left"].push(portal);
@@ -227,8 +229,6 @@ var VisualUtil = (function() {
                     i = 0;
                 }
             }
-
-            var prefix = descriptionForGroup(key)[0];
 
             var infos = [], numMen = 0, numWomen = 0, numUnknown = 0, numPeople = 0;
             for (i = 0; i < group.length; i++) {
@@ -414,7 +414,9 @@ var VisualUtil = (function() {
             }
 
             if (!characterTexts.isEmpty()) {
-                sentences.push("%1, you see %2.".arg(prefix, Util.joinFancy(characterTexts)));
+                var prefix = prefixForGroup(key);
+                sentences.push("%1, you see %2.".arg(prefix, Util.joinFancy(characterTexts))
+                               .capitalized());
             }
         }
 
@@ -423,10 +425,12 @@ var VisualUtil = (function() {
 
     function describeActionRelativeTo(character, relative, distance) {
 
-        var text = "", target, action = character.currentAction;
-        if (action === "walk" || action === "run") {
-            var continuous = (action === "walk" ? "walking" : "running");
+        var text = "";
+        var target;
+        var action = character.currentAction;
+        var verb = VERBS[action].continuous;
 
+        if (action === "walk" || action === "run") {
             var vector = character.currentRoom.position.minus(relative.currentRoom.position);
             var angle = character.direction.angle(vector);
 
@@ -439,23 +443,20 @@ var VisualUtil = (function() {
                 direction = Util.directionForVector(character.direction);
             }
 
-            text = "%1 %2".arg(continuous, direction);
-        } else if (action === "fight") {
-            if (character.target && character.target.currentRoom === character.currentRoom) {
-                target = character.target;
-                text = "fighting " + target.indefiniteName();
-            } else {
-                text = "fighting";
-            }
-        } else if (action === "guard") {
-            if (character.target) {
-                target = character.target;
-                if (target.isPortal()) {
-                    text = "guarding the " + target.nameFromRoom(character.currentRoom);
-                } else {
-                    text = "guarding " + target.indefiniteName();
+            text = "%1 %2".arg(verb, direction);
+        } else {
+            target = character.target;
+            if (target) {
+                if (target.currentRoom === character.currentRoom) {
+                    if (action === "talk" || action === "shout") {
+                        text = "%1 to %2".arg(verb, target.definiteName());
+                    } else if (target.isPortal()) {
+                        text += "%1 the %2".arg(verb, target.nameFromRoom(character.currentRoom));
+                    } else {
+                        text = "%1 %2".arg(verb, target.indefiniteName());
+                    }
                 }
-            } else {
+            } else if (action === "guard") {
                 text = "standing guard";
             }
         }
@@ -477,7 +478,7 @@ var VisualUtil = (function() {
     }
 
     return {
-        "descriptionForGroup": descriptionForGroup,
+        "prefixForGroup": prefixForGroup,
         "divideItemsIntoGroups": divideItemsIntoGroups,
         "dividePortalsAndCharactersIntoGroups": dividePortalsAndCharactersIntoGroups,
         "charactersVisibleThroughPortal": charactersVisibleThroughPortal,

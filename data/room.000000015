@@ -1,0 +1,6 @@
+{
+  "type": "Room",
+  "position": [ 0, -10, 0 ],
+  "flags": "",
+  "portals": [ "portal:14" ]
+}

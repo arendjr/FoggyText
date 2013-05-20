@@ -2,7 +2,7 @@
   "name": "Cloning Chambers",
   "description": "You're in a large round room populated with coffin-like machines. Unlike actual coffins, the machines have a transparent lid revealing human bodies in various stages of development. In the center there's various forms of medical equipment as well as training instruments.",
   "type": "Room",
-  "position": [ 0, 0, 0 ],
+  "position": [ -10, -10, 0 ],
   "flags": "",
-  "portals": [ "portal:7", "portal:11", "portal:17" ]
+  "portals": [ "portal:7", "portal:9", "portal:18", "portal:21" ]
 }

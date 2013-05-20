@@ -46,6 +46,11 @@ function SessionHandler() {
                 }
 
                 var cloneId = parseInt(input, 10);
+                if (input.length < 2 || input.length > 5 || isNaN(cloneId) || cloneId < 14) {
+                    send("Not a valid Clone ID number. A valid Clone ID a number ranging from 14 " +
+                         "through 99999\n");
+                    return;
+                }
 
                 var player;
                 if (cloneId >= 14) {
@@ -83,14 +88,16 @@ function SessionHandler() {
                         return;
                     }
 
-                    send(("%1 Authenticated. Restoring control to clone.\n" +
-                          "Type *help* for instructions.\n").arg(this.player.name));
+                    send(("%1 Authenticated. Type *help* for instructions.\n" +
+                          "\n" +
+                          "You open your eyes.\n")
+                         .arg(this.player.name));
                     this.setState("SignedIn");
                 }  else {
                     LogUtil.logSessionEvent(this._session.source, "Authentication failed for " +
                                             "player " + this.player.name);
 
-                    send("Authentication Failure.\n");
+                    send("Authentication Failure.\n\n", Color.Red);
                 }
             }
         },
@@ -120,15 +127,15 @@ function SessionHandler() {
             },
             "processInput": function(input) {
                 if (input.length < 6) {
-                    send("Please choose a password of at least 6 characters.\n", Color.Red);
+                    send("Passphrase should be at least 6 characters.\n", Color.Red);
                     return;
                 }
                 if (input.toLower() === signUpData.userName.toLower()) {
-                    send("Your password and your username may not be the same.\n", Color.Red);
+                    send("Passphrase may not equal Clone ID.\n", Color.Red);
                     return;
                 }
                 if (input === "123456" || input === "654321") {
-                    send("Sorry, that password is too simple.\n", Color.Red);
+                    send("Passphrase too simple.\n", Color.Red);
                     return;
                 }
                 signUpData.password = input;
@@ -141,14 +148,14 @@ function SessionHandler() {
                 send({ "inputType": "text" });
             },
             "prompt": function() {
-                send("Please confirm your password: ");
+                send("Confirm passphrase: ");
             },
             "processInput": function(input) {
                 if (signUpData.password === input) {
-                    send("Password confirmed.\n", Color.Green);
+                    send("Passphrase confirmed.\n", Color.Green);
                     this.setState("AskingGender");
                 } else {
-                    send("Passwords don't match.\n", Color.Red);
+                    send("Passphrases don't match.\n", Color.Red);
                     this.setState("AskingSignUpPassword");
                 }
             }
@@ -157,23 +164,21 @@ function SessionHandler() {
         "AskingGender": {
             "enter": function() {
                 send("\n" +
-                     "Please select which gender you would like your character to be.\n" +
-                     "Your gender has a minor influence on the physique of your character.");
-            },
-            "prompt": function() {
-                send("\n" +
-                     "Please choose *male* or *female*.\n");
+                     "Choose a gender for your clone:");
             },
             "processInput": function(input) {
                 var answer = input.toLower();
                 if (answer === "male" || answer === "m") {
-                    send("\nYou have chosen to be male.\n", Color.Green);
+                    send("Male clone selected.\n", Color.Green);
                     signUpData.gender = "male";
                     this.setState("AskingSignUpConfirmation");
                 } else if (answer === "female" || answer === "f") {
-                    send("\nYou have chosen to be female.\n", Color.Green);
+                    send("Female clone selected.\n", Color.Green);
                     signUpData.gender = "female";
                     this.setState("AskingSignUpConfirmation");
+                } else {
+                    send("\n" +
+                         "Choose *male* or *female*.\n");
                 }
             }
         },
@@ -181,12 +186,11 @@ function SessionHandler() {
         "AskingSignUpConfirmation": {
             "enter": function() {
                 send("\n" +
-                     "You will become a %1 soldier.\n".arg(signUpData.gender) +
-                     "\n");
+                     "Clone is ready for production.\n");
             },
             "prompt": function() {
                 send("\n" +
-                     "Are you ready to create this character?\n");
+                     "Continue?\n");
             },
             "processInput": function(input) {
                 var answer = input.toLower();
@@ -223,9 +227,7 @@ function SessionHandler() {
 
                     var player = Realm.getPlayer(signUpData.userName);
                     if (player) {
-                        send("Uh-oh, it appears someone has claimed your character name while " +
-                             "you were creating yours. I'm terribly sorry, but it appears you " +
-                             "will have to start over.\n");
+                        send("Clone ID already taken. Please re-register.\n");
                         this.setState("SessionClosed");
                         return;
                     }
@@ -251,7 +253,9 @@ function SessionHandler() {
                     LogUtil.logSessionEvent(this._session.source, "Character created for player " +
                                             player.name);
 
-                    send("\nWelcome to %1, %2.\n".arg(Realm.name, player.name));
+                    send(("%1 Created. Type *help* for instructions.\n").arg(this.player.name) +
+                         "\n" +
+                         "You open your eyes.\n");
 
                     this.setPlayer(player);
                     this.setState("SignedIn");
@@ -272,7 +276,6 @@ function SessionHandler() {
 
         "SignInAborted": {
             "enter": function() {
-                send("Okay, bye.");
                 this.setState("SessionClosed");
             }
         },

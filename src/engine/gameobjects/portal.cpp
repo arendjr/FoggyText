@@ -158,6 +158,14 @@ bool Portal::canOpenFromRoom(const GameObjectPtr &room) const {
     return m_flags & PortalFlags::CanOpenFromSide1;
 }
 
+bool Portal::omitFromDescriptionFromRoom(const GameObjectPtr &room) const {
+
+    if (room == m_room2) {
+        return m_flags & PortalFlags::OmitFromDescriptionFromSide2;
+    }
+    return m_flags & PortalFlags::OmitFromDescriptionFromSide1;
+}
+
 bool Portal::canOpen() const {
 
     return m_flags & (PortalFlags::CanOpenFromSide1 | PortalFlags::CanOpenFromSide2);

@@ -129,7 +129,7 @@ void LogUtil::logException(const QString &message, const QScriptValue &exception
     QScriptValue backtrace = exception.property("backtrace");
 
     logError(message.arg(arg1) +
-             (backtrace.isValid() ? QString("\nBacktrace: %1").arg(backtrace.toString()) :
+             (backtrace.isValid() ? QString("\nBacktrace:\n%1").arg(backtrace.toString()) :
                                     QString("")));
 }
 
@@ -140,7 +140,7 @@ void LogUtil::logException(const QString &message, const QScriptValue &exception
     QScriptValue backtrace = exception.property("backtrace");
 
     logError(message.arg(arg1, arg2) +
-             (backtrace.isValid() ? QString("\nBacktrace: %1").arg(backtrace.toString()) :
+             (backtrace.isValid() ? QString("\nBacktrace:\n%1").arg(backtrace.toString()) :
                                     QString("")));
 }
 

@@ -91,6 +91,7 @@ AddPortalCommand.prototype.execute = function(player, command) {
     portal.room = this.currentRoom;
     portal.name2 = oppositeName;
     portal.room2 = destination;
+    portal.flags = "CanSeeThrough|CanHearThrough|CanShootThrough|CanPassThrough";
 
     this.currentRoom.addPortal(portal);
     destination.addPortal(portal);

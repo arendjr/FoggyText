@@ -536,6 +536,8 @@ Character.prototype.take = function(items) {
                 this.addInventoryItem(item);
                 room.removeItem(item);
                 takenItems.append(item);
+
+                item.position = [0, 0, 0];
             } else {
                 this.send("You can't take %1, because it's too heavy."
                           .arg(item.definiteName(room.items)));

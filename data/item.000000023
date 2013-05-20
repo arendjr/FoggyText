@@ -1,0 +1,10 @@
+{
+  "name": "x-ray machine",
+  "plural": "x-ray machines",
+  "indefiniteArticle": "an",
+  "description": "It is a rectangular machine that looks like a giant scanner. It can be rotated to scan a person standing up or lying on top of it.",
+  "position": [ 0, -1, 0 ],
+  "weight": 0,
+  "cost": 0,
+  "flags": ""
+}

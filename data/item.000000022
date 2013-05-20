@@ -1,0 +1,10 @@
+{
+  "name": "treadmill",
+  "plural": "treadmills",
+  "indefiniteArticle": "a",
+  "description": "It's a short treadmill with two handles for holding. There's additional instruments for measuring blood pressure and heart beat of whoever takes place on the device.",
+  "position": [ 2, 0, 0 ],
+  "weight": 0,
+  "cost": 0,
+  "flags": ""
+}

@@ -29,6 +29,10 @@ class Item : public GameObject {
         void setPosition(const Point3D &position);
         Q_PROPERTY(Point3D position READ position WRITE setPosition)
 
+        const QString &presenceVerb() const { return m_presenceVerb; }
+        void setPresenceVerb(const QString &presenceVerb);
+        Q_PROPERTY(QString presenceVerb READ presenceVerb WRITE setPresenceVerb)
+
         double weight() const { return m_weight; }
         void setWeight(double weight);
         Q_PROPERTY(double weight READ weight WRITE setWeight)
@@ -49,6 +53,8 @@ class Item : public GameObject {
 
     private:
         Point3D m_position;
+
+        QString m_presenceVerb;
 
         double m_weight;
 

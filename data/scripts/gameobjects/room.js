@@ -35,11 +35,13 @@ Room.prototype.lookAtBy = function(character) {
                 });
             }
 
-            var groupDescription = VisualUtil.descriptionForGroup(key);
-            var prefix = groupDescription[0];
-            var helperVerb = groupDescription[plural ? 2 : 1];
-            itemTexts.append("%1 %2 %3.".arg(prefix, helperVerb, Util.joinFancy(combinedItems))
-                                        .replace("there is", "there's"));
+            var firstItem = itemGroup[0];
+            var presenceVerb = (firstItem ? firstItem.presenceVerb : "be");
+
+            var prefix = VisualUtil.prefixForGroup(key);
+            var verb = VERBS[presenceVerb][plural ? "plural" : "thirdPerson"];
+            itemTexts.append("%1 %2 %3.".arg(prefix, verb, Util.joinFancy(combinedItems))
+                             .replace("there is", "there's"));
         }
     }
 
@@ -53,6 +55,13 @@ Room.prototype.lookAtBy = function(character) {
     if (!itemTexts.isEmpty()) {
         if (!text.endsWith(" ") && !text.endsWith("\n")) {
             text += " ";
+        }
+        for (var i = 0; i < itemTexts.length; i++) {
+            var itemText = itemTexts[i];
+            if (i > 1 && i === itemTexts.length - 1) {
+                itemText = "and " + itemText;
+            }
+            itemTexts[i] = itemText.capitalized();
         }
         text += itemTexts.join(" ");
     }

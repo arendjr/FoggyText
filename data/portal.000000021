@@ -1,0 +1,6 @@
+{
+  "name": "door",
+  "room": "room:6",
+  "room2": "room:20",
+  "flags": "CanSeeThrough|CanHearThrough|CanShootThrough|CanPassThrough"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Cloning Chambers",
+  "description": "There's a plethora of medical instruments around you.",
+  "type": "Room",
+  "position": [ 0, -10, 0 ],
+  "flags": "",
+  "portals": [ "portal:14", "portal:17", "portal:18", "portal:19" ],
+  "items": [ "item:22", "item:23", "item:24", "item:25" ]
+}

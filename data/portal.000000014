@@ -1,0 +1,8 @@
+{
+  "name": "center",
+  "description": "You see a bunch of training instruments and some medical equipment.",
+  "name2": "east",
+  "room": "room:10",
+  "room2": "room:16",
+  "flags": "OmitFromDescriptionFromSide1|CanSeeThrough|CanHearThrough|CanShootThrough|CanPassThrough"
+}

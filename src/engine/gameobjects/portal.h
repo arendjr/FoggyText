@@ -13,6 +13,8 @@ PT_DEFINE_FLAGS(PortalFlags,
     IsHiddenFromSide2,
     CanOpenFromSide1,
     CanOpenFromSide2,
+    OmitFromDescriptionFromSide1,
+    OmitFromDescriptionFromSide2,
     CanSeeThrough,
     CanHearThrough,
     CanShootThrough,
@@ -77,6 +79,7 @@ class Portal : public GameObject {
         Q_INVOKABLE QString destinationFromRoom(const GameObjectPtr &room) const;
         Q_INVOKABLE bool isHiddenFromRoom(const GameObjectPtr &room) const;
         Q_INVOKABLE bool canOpenFromRoom(const GameObjectPtr &room) const;
+        Q_INVOKABLE bool omitFromDescriptionFromRoom(const GameObjectPtr &room) const;
         Q_INVOKABLE bool canOpen() const;
         Q_INVOKABLE bool canSeeThrough() const;
         Q_INVOKABLE bool canHearThrough() const;

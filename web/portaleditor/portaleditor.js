@@ -4,6 +4,8 @@ define(["controller", "util", "lib/laces", "lib/zepto", "text!portaleditor/porta
 
     "use strict";
 
+    var DEFAULT_FLAGS = "CanSeeThrough|CanHearThrough|CanShootThrough|CanPassThrough";
+
     function PortalEditor() {
 
         this.element = null;
@@ -29,6 +31,8 @@ define(["controller", "util", "lib/laces", "lib/zepto", "text!portaleditor/porta
             IsHiddenFromSide2: false,
             CanOpenFromSide1: false,
             CanOpenFromSide2: false,
+            OmitFromDescriptionFromSide1: false,
+            OmitFromDescriptionFromSide2: false,
             CanSeeThrough: false,
             CanHearThrough: false,
             CanShootThrough: false,
@@ -125,7 +129,7 @@ define(["controller", "util", "lib/laces", "lib/zepto", "text!portaleditor/porta
 
     PortalEditor.prototype.add = function(sourceRoom, options) {
 
-        this.edit({ "room": sourceRoom }, options);
+        this.edit({ "room": sourceRoom, "flags": DEFAULT_FLAGS }, options);
     };
 
     PortalEditor.prototype.edit = function(portal, options) {
