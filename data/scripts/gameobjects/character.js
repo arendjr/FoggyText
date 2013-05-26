@@ -8,7 +8,6 @@ function Character() {
 Character.prototype.changeStats = function(newStats) {
 
     this.maxHp = 2 * newStats[VITALITY];
-    this.maxMp = newStats[INTELLIGENCE];
 };
 
 Character.prototype.close = function(portal) {
@@ -83,7 +82,6 @@ Character.prototype.die = function(attacker) {
             var respawnTime = this.respawnTime + randomInt(0, this.respawnTimeVariation);
             this.setTimeout(function() {
                 this.hp = this.maxHp;
-                this.mp = this.maxMp;
 
                 this.enter(this.currentRoom);
 

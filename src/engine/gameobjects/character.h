@@ -79,14 +79,6 @@ class Character : public StatsItem {
         void setMaxHp(int maxHp);
         Q_PROPERTY(int maxHp READ maxHp WRITE setMaxHp)
 
-        int mp() const { return m_mp; }
-        void setMp(int mp);
-        Q_PROPERTY(int mp READ mp WRITE setMp)
-
-        int maxMp() const { return m_maxMp; }
-        void setMaxMp(int maxMp);
-        Q_PROPERTY(int maxMp READ maxMp WRITE setMaxMp)
-
         double gold() const { return m_gold; }
         void setGold(double gold);
         Q_PROPERTY(double gold READ gold WRITE setGold)
@@ -157,9 +149,6 @@ class Character : public StatsItem {
 
         int m_hp;
         int m_maxHp;
-
-        int m_mp;
-        int m_maxMp;
 
         double m_gold;
 

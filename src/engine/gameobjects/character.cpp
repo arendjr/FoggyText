@@ -36,8 +36,6 @@ Character::Character(Realm *realm, GameObjectType objectType, uint id, Options o
     m_respawnTimeVariation(0),
     m_hp(1),
     m_maxHp(1),
-    m_mp(0),
-    m_maxMp(0),
     m_gold(0.0),
     m_effectsTimerId(0),
     m_secondsStunned(0),
@@ -220,28 +218,6 @@ void Character::setMaxHp(int maxHp) {
     }
 }
 
-void Character::setMp(int mp) {
-
-    if (m_mp != mp) {
-        if (mayReferenceOtherProperties()) {
-            m_mp = qBound(0, mp, maxMp());
-        } else {
-            m_mp = mp;
-        }
-
-        setModified();
-    }
-}
-
-void Character::setMaxMp(int maxMp) {
-
-    if (m_maxMp != maxMp) {
-        m_maxMp = qMax(maxMp, 0);
-
-        setModified();
-    }
-}
-
 void Character::setGold(double gold) {
 
     if (m_gold != gold) {
@@ -308,7 +284,7 @@ void Character::clearNegativeEffects() {
     for (int i = 0; i < m_effects.length(); i++) {
         Effect &effect = m_effects[i];
 
-        if (effect.hpDelta < 0 || effect.mpDelta < 0) {
+        if (effect.hpDelta < 0) {
             m_effects.removeAt(i);
             i--;
             continue;
@@ -626,9 +602,6 @@ int Character::updateEffects(qint64 now) {
         while (msecsLeft <= 0) {
             if (effect.hpDelta != 0) {
                 m_hp = qBound(0, m_hp + effect.hpDelta, m_maxHp);
-            }
-            if (effect.mpDelta != 0) {
-                m_mp = qBound(0, m_mp + effect.mpDelta, m_maxMp);
             }
             setModified();
             send(effect.message);

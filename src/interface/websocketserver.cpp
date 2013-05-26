@@ -84,16 +84,12 @@ void WebSocketServer::onSessionOutput(const QString &data) {
                                   "\"name\": %1, "
                                   "\"isAdmin\": %2, "
                                   "\"hp\": %3, "
-                                  "\"maxHp\": %4, "
-                                  "\"mp\": %5, "
-                                  "\"maxMp\": %6 "
+                                  "\"maxHp\": %4 "
                                 "} "
                               "}")
                       .arg(ConversionUtil::jsString(player->name()),
                            player->isAdmin() ? "true" : "false",
                            QString::number(player->hp()),
-                           QString::number(player->maxHp()),
-                           QString::number(player->mp()),
-                           QString::number(player->maxMp())));
+                           QString::number(player->maxHp())));
     }
 }

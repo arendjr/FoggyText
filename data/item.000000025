@@ -2,6 +2,7 @@
   "name": "infusion bag",
   "plural": "infusion bags",
   "indefiniteArticle": "an",
+  "description": "It contains what looks to be blood.",
   "position": [ 1, 3, 0 ],
   "presenceVerb": "hang",
   "weight": 0,

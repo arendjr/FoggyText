@@ -3,6 +3,7 @@
   "plural": "something resembling an operation tables",
   "description": "It's a removable table with a white cloth on it. It looks like something that would normally only be used for inspection, but a set of tools for making incisions seems to suggest otherwise. Unless it's a very invasive sort of inspection...",
   "position": [ 0, 3, 0 ],
+  "presenceVerb": "be",
   "weight": 0,
   "cost": 0,
   "flags": ""

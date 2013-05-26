@@ -1,6 +1,7 @@
 {
+  "name": "East Hallway - Floor 38",
   "type": "Room",
   "position": [ -13, -10, 0 ],
   "flags": "",
-  "portals": [ "portal:21" ]
+  "portals": [ "portal:21", "portal:28", "portal:30" ]
 }

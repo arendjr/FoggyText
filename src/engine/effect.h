@@ -17,7 +17,6 @@ class Effect {
         int numOccurrences;
 
         int hpDelta;
-        int mpDelta;
 
         QString message;
 

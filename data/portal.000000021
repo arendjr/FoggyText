@@ -1,6 +1,11 @@
 {
   "name": "door",
+  "description": "It's the only door outside you can see.",
+  "name2": "door",
+  "description2": "It is sealed shut to prevent people from peeking inside.",
+  "destination2": "the cloning chambers",
   "room": "room:6",
   "room2": "room:20",
-  "flags": "CanSeeThrough|CanHearThrough|CanShootThrough|CanPassThrough"
+  "flags": "CanOpenFromSide1|CanOpenFromSide2|CanHearThrough|CanSeeThroughIfOpen|CanHearThroughIfOpen|CanShootThroughIfOpen|CanPassThroughIfOpen|IsOpen",
+  "eventMultipliers": { "Sound": 0.2 }
 }

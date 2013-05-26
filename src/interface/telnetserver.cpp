@@ -181,7 +181,7 @@ void TelnetServer::onSessionOutput(QString data) {
             }
             sendMSDPUpdate(socket, player);
         } else {
-            write(socket, QString("(%1H %2M) ").arg(player->hp()).arg(player->mp()).toUtf8());
+            write(socket, QString("(%1H) ").arg(player->hp()).toUtf8());
         }
     }
 }
@@ -277,14 +277,10 @@ void TelnetServer::sendMSDPUpdate(QTcpSocket *socket, Player *player) {
 
     QByteArray health = QByteArray::number(player->hp());
     QByteArray healthMax = QByteArray::number(player->maxHp());
-    QByteArray mana = QByteArray::number(player->mp());
-    QByteArray manaMax = QByteArray::number(player->maxMp());
     QByteArray money = QByteArray::number(player->gold());
 
     write(socket, IAC SB MSDP MSDP_VAR "HEALTH" MSDP_VAL + health + IAC SE
                   IAC SB MSDP MSDP_VAR "HEALTH_MAX" MSDP_VAL + healthMax + IAC SE
-                  IAC SB MSDP MSDP_VAR "MANA" MSDP_VAL + mana + IAC SE
-                  IAC SB MSDP MSDP_VAR "MANA_MAX" MSDP_VAL + manaMax + IAC SE
                   IAC SB MSDP MSDP_VAR "MONEY" MSDP_VAL + money + IAC SE);
 }
 

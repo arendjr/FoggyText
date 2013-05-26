@@ -60,8 +60,7 @@ define(["lib/zepto"], function($) {
 
         statusHeader = {
             "name": $(".status-header .name"),
-            "hp": $(".status-header .hp"),
-            "mp": $(".status-header .mp")
+            "hp": $(".status-header .hp")
         };
 
         commandInput = $(".command-input");
@@ -200,13 +199,6 @@ define(["lib/zepto"], function($) {
                         statusHeader.hp.css("color", "#f00");
                     } else {
                         statusHeader.hp.css("color", "");
-                    }
-
-                    statusHeader.mp.text(player.mp + "MP");
-                    if (player.mp < player.maxMp / 4) {
-                        statusHeader.mp.css("color", "#f00");
-                    } else {
-                        statusHeader.mp.css("color", "");
                     }
                 } else if (data.inputType) {
                     commandInput.attr("type", data.inputType);
