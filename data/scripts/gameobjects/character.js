@@ -366,45 +366,6 @@ Character.prototype.lookAtBy = function(character) {
         }
     }
 
-    if (character.id !== this.id) {
-        var observerStatsTotal = character.stats.total();
-        if (character.weapon) {
-            observerStatsTotal += character.weapon.stats.total();
-        }
-        var characterStatsTotal = this.stats.total();
-        if (this.weapon) {
-            characterStatsTotal += this.weapon.stats.total();
-        }
-        var statsDiff = observerStatsTotal - characterStatsTotal;
-
-        if (statsDiff > 25) {
-            if (character.race.name === "giant" && this.race.name !== "giant") {
-                text += "You should be careful not to accidentally step on %1.\n"
-                        .arg(this.objectPronoun);
-            } else if (character.race.name === "goblin" && this.race.name !== "goblin") {
-                text += "%1 should be thankful if you don't kill %2.\n"
-                        .arg(this.subjectPronoun.capitalized(), this.objectPronoun);
-            } else {
-                text += "If it came to a fight with %1, %2'd better get %3 friends first.\n"
-                        .arg(this.objectPronoun, this.subjectPronoun, this.possessiveAdjective);
-            }
-        } else if (statsDiff > 15) {
-            text += "%1 is not much of a match for you.\n".arg(this.subjectPronoun.capitalized());
-        } else if (statsDiff > 5) {
-            text += "You appear to be a bit stronger than %1.\n".arg(this.objectPronoun);
-        } else if (statsDiff < -25) {
-            text += "%1 could kill you with a needle.\n".arg(this.subjectPronoun.capitalized());
-        } else if (statsDiff < -15) {
-            text += "%1 appears like %2 could put up one hell of a fight.\n"
-                    .arg(this.subjectPronoun.capitalized(), this.subjectPronoun);
-        } else if (statsDiff < -5) {
-            text += "You better think twice before attacking %2.\n".arg(this.objectPronoun);
-        } else {
-            text += "%1 appears to be about as strong as you are.\n"
-                    .arg(this.subjectPronoun.capitalized());
-        }
-    }
-
     return text;
 };
 
@@ -589,6 +550,44 @@ Character.prototype.tell = function(player, message) {
 Character.prototype.totalWeight = function() {
 
     return this.weight + this.inventoryWeight();
+};
+
+Character.prototype.walkTo = function(character) {
+
+    var currentRoom = this.currentRoom;
+    var targetRoom = character.currentRoom;
+    if (targetRoom === currentRoom) {
+        return;
+    }
+
+    var queue = [];
+    currentRoom.portals.forEach(function(portal) {
+        queue.push({ room: portal.oppositeOf(currentRoom), previousIndex: null });
+    });
+
+    for (var i = 0; i < queue.length; i++) {
+        var room = queue[i].room;
+        if (targetRoom === room) {
+            while (queue[i].previousIndex !== null) {
+                i = queue[i].previousIndex;
+            }
+            this.go(queue[i].room);
+            return;
+        }
+        room.portals.forEach(function(portal) {
+            var nextRoom = portal.oppositeOf(room);
+            var inQueue = false;
+            for (var j = 0; j < queue.length; j++) {
+                if (queue[j].room === nextRoom) {
+                    inQueue = true;
+                    break;
+                }
+            }
+            if (!inQueue) {
+                queue.push({ room: nextRoom, previousIndex: i });
+            }
+        });
+    }
 };
 
 Character.prototype.wield = function(item) {

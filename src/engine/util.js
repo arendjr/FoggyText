@@ -543,23 +543,40 @@ function $(identifier) {
 }
 
 
+/**
+ * Returns true by chance. E.g. byChance(1, 7) will return true with a chance of 1/7 and false all
+ * the other times. It is also possible to call this method as byChance(1/7).
+ */
 function byChance(n, p) {
 
-    return Util.randomInt(0, p) < n;
+    if (p) {
+        return Util.randomInt(0, p) < n;
+    } else {
+        return Math.random() < n;
+    }
 }
 
 
+/**
+ * Returns the lowest of two numbers.
+ */
 function min(a, b) {
 
     return a < b ? a : b;
 }
 
+/**
+ * Returns the highest of two numbers.
+ */
 function max(a, b) {
 
     return a > b ? a : b;
 }
 
 
+/**
+ * Returns a random integer of at least min (inclusive) and at most max (exclusive).
+ */
 function randomInt(min, max) {
 
     return Util.randomInt(min, max);

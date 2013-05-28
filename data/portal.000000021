@@ -6,6 +6,6 @@
   "destination2": "the cloning chambers",
   "room": "room:6",
   "room2": "room:20",
-  "flags": "CanOpenFromSide1|CanOpenFromSide2|CanHearThrough|CanSeeThroughIfOpen|CanHearThroughIfOpen|CanShootThroughIfOpen|CanPassThroughIfOpen|IsOpen",
+  "flags": "CanOpenFromSide1|CanOpenFromSide2|CanHearThrough|CanSeeThroughIfOpen|CanHearThroughIfOpen|CanShootThroughIfOpen|CanPassThroughIfOpen",
   "eventMultipliers": { "Sound": 0.2 }
 }

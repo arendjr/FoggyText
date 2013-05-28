@@ -428,6 +428,10 @@ var VisualUtil = (function() {
         var text = "";
         var target;
         var action = character.currentAction;
+        if (!VERBS.hasOwnProperty(action)) {
+            return { "text": text, "target": target };
+        }
+
         var verb = VERBS[action].continuous;
 
         if (action === "walk" || action === "run") {
